@@ -1,0 +1,41 @@
+M68HC11 GAS  main.s 			page 1
+
+
+   1                 	;;;-----------------------------------------
+   2                 	;;; Start MC68HC11 gcc assembly output
+   3                 	;;; gcc compiler 3.0.4 m68hc1x-20021111
+   4                 	;;; Command:	/usr/lib/gcc-lib/m6811-elf/3.0.4/cc1 -lang-c -D__GNUC__=3 -D__GNUC_MINOR__=0 -D__GNUC_
+   5                 	;;; Compiled:	Thu Mar 20 09:52:55 2003
+   6                 	;;; (META)compiled by GNU C version 2.96 20000731 (Mandrake Linux 8.2 2.96-0.76mdk).
+   7                 	;;;-----------------------------------------
+   8                 		.file	"main.c"
+   9                 		.mode mshort
+  10                 		.mode mlong-double
+  11                 		; extern	foo
+  12                 		.sect	.text
+  13                 		.globl	_start
+  14                 		.type	_start,@function
+  15                 	_start:
+  16 0000 C6 03       		ldab	#3
+  17 0002 BD 00 00    		bsr	foo
+  18 0005 4F          		clra
+  19 0006 5F          		clrb
+  20 0007 39          		rts
+  21                 	.Lfe1:
+  22                 		.size	_start,.Lfe1-_start
+  23                 		.ident	"GCC: (GNU) 3.0.4 m68hc1x-20021111"
+M68HC11 GAS  main.s 			page 2
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+              main.s:0      .text:0000000000000000 L0F0
+              main.s:15     .text:0000000000000000 _start
+              main.s:16     .text:0000000000000000 L0L0
+              main.s:17     .text:0000000000000002 L0L1
+              main.s:18     .text:0000000000000005 L0L2
+              main.s:19     .text:0000000000000006 L0L3
+              main.s:20     .text:0000000000000007 L0L4
+
+UNDEFINED SYMBOLS
+foo

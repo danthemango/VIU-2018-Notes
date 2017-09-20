@@ -1,0 +1,178 @@
+M68HC11 GAS  wave.s 			page 1
+
+
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "wave.s" 
+   4                 	; Behaviour: 
+   5                 	;      Generates a 1KHz square wave with a 40% duty cycle
+   6                 	;      using polling   (see text page 366)
+   7                 	; Assumptions:
+   8                 	;      none
+   9                 	; Board:
+  10                 	;      CME11-E9-EVBU
+  11                 	; Author/Date:
+  12                 	;      Peter Walsh Feb 2001
+  13                 	;      revised Feb 2002
+  14                 	;==========================================-=
+  15                 	
+  16                 	;----------------------------------------------
+  17                 	;            Text Section (code and data)
+  18                 	;----------------------------------------------
+  19                 	.sect .text 
+  20                 	.global _start
+  21                 	
+  22                 	set regbase, 0x1000
+  23                 	set porta, 0x0
+  24                 	set tcnt, 0x0e
+  25                 	set tflg1, 0x23
+  26                 	set tctl1, 0x20
+  27                 	set toc2, 0x18
+  28                 	
+  29                 	set numCount, 0xffff ; number of times we are going to let the count exceed
+  30                 	set highTicks, 60000            
+  31                 	set lowTicks, 60000            
+  32                 	
+  33                 	set toggle, 0x40
+  34                 	set oc2, 0x40
+  35                 	set clear, 0x40
+  36                 	
+  37                 	set OUTA, 0xffb8
+  38                 	
+  39                 	_start:               
+  40 0000 CC FF FF    	        ldd #numCount
+  41 0003 FD 00 00    	        std count
+  42 0006 CE 10 00    	        ldx #regbase           
+  43                 	
+  44 0009 1C 00 40    	        bset porta,x oc2       ; set OC2 pin to high (PA6)     
+  45                 	
+  46 000c 86 40       	        ldaa #toggle           ; set successful compare action to toggle (pp 365)    
+  47 000e A7 20       	        staa tctl1,x          
+  48                 	    
+  49 0010 EC 0E       	        ldd tcnt,x             ; toggle OC2 pin after 400 us
+  50 0012 C3 EA 60    	        addd #highTicks
+  51 0015 ED 18       	        std toc2,x
+  52                 	
+  53 0017 86 40       	        ldaa #clear            ; clear OC2F (pp 348)
+  54 0019 A7 23       	        staa tflg1,x
+  55                 	
+  56 001b 1F 23 40 FC 	high:   brclr tflg1,x oc2 high ; loop until OC2F is set
+  57                 	        
+M68HC11 GAS  wave.s 			page 2
+
+
+  58 001f 3C          	        pshx
+  59 0020 FE 00 00    	        ldx count     ; decrement count
+  60 0023 09          	        dex
+  61 0024 FF 00 00    	        stx count
+  62 0027 38          	        pulx
+  63                 	
+  64 0028 26 F1       	        bne high     ; only escape when count is 0
+  65                 	
+  66 002a 3C          	        pshx         ; set count to the max
+  67 002b CE FF FF    	        ldx #0xffff
+  68 002e FF 00 00    	        stx count
+  69 0031 38          	        pulx
+  70                 	
+  71 0032 CC FF FF    	        ldd #numCount
+  72                 	
+  73 0035 EC 18       	        ldd toc2,x             ; toggle OC2 pin after 600 um
+  74 0037 C3 EA 60    	        addd #lowTicks
+  75 003a ED 18       	        std toc2,x
+  76                 	
+  77 003c 86 40       	        ldaa #clear            ; clear OC2F (pp 348)
+  78 003e A7 23       	        staa tflg1,x
+  79                 	         ;print 'a'
+  80 0040 86 61       	        ldaa #'a'
+  81 0042 BD FF B8    	        jsr OUTA
+  82                 	
+  83 0045 1F 23 40 FC 	low:    brclr tflg1,x oc2 low  ; loop until OC2 flag is set
+  84                 	
+  85 0049 86 40       	        ldaa #clear            ; clear OC2F (pp 348)
+  86 004b A7 23       	        staa tflg1,x          
+  87                 	
+  88 004d EC 18       	        ldd toc2,x             ; toggle OC2 pin after 400us
+  89 004f C3 EA 60    	        addd #highTicks
+  90 0052 ED 18       	        std toc2,x
+  91                 	
+  92                 	         ; print 'b'
+  93 0054 86 62       	        ldaa #98
+  94 0056 BD FF B8    	        jsr OUTA
+  95                 	
+  96 0059 20 C0       	        bra high
+  97                 	
+  98 005b 3F          	        swi                    
+  99                 	
+ 100 005c FF FF       	count:   .word numCount
+ 101 005e 00 00       	tmp:     .word 0x0000
+ 102                 	
+ 103                 	.end
+M68HC11 GAS  wave.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 wave.s
+              wave.s:0      .text:0000000000000000 L0F0
+              wave.s:39     .text:0000000000000000 _start
+              wave.s:22     *ABS*:0000000000001000 regbase
+              wave.s:23     *ABS*:0000000000000000 porta
+              wave.s:24     *ABS*:000000000000000e tcnt
+              wave.s:25     *ABS*:0000000000000023 tflg1
+              wave.s:26     *ABS*:0000000000000020 tctl1
+              wave.s:27     *ABS*:0000000000000018 toc2
+              wave.s:29     *ABS*:000000000000ffff numCount
+              wave.s:30     *ABS*:000000000000ea60 highTicks
+              wave.s:31     *ABS*:000000000000ea60 lowTicks
+              wave.s:33     *ABS*:0000000000000040 toggle
+              wave.s:34     *ABS*:0000000000000040 oc2
+              wave.s:35     *ABS*:0000000000000040 clear
+              wave.s:37     *ABS*:000000000000ffb8 OUTA
+              wave.s:40     .text:0000000000000000 L0L0
+              wave.s:41     .text:0000000000000003 L0L1
+              wave.s:100    .text:000000000000005c count
+              wave.s:42     .text:0000000000000006 L0L2
+              wave.s:44     .text:0000000000000009 L0L3
+              wave.s:46     .text:000000000000000c L0L4
+              wave.s:47     .text:000000000000000e L0L5
+              wave.s:49     .text:0000000000000010 L0L6
+              wave.s:50     .text:0000000000000012 L0L7
+              wave.s:51     .text:0000000000000015 L0L8
+              wave.s:53     .text:0000000000000017 L0L9
+              wave.s:54     .text:0000000000000019 L0L10
+              wave.s:56     .text:000000000000001b high
+              wave.s:56     .text:000000000000001b L0L11
+              wave.s:58     .text:000000000000001f L0L12
+              wave.s:59     .text:0000000000000020 L0L13
+              wave.s:60     .text:0000000000000023 L0L14
+              wave.s:61     .text:0000000000000024 L0L15
+              wave.s:62     .text:0000000000000027 L0L16
+              wave.s:64     .text:0000000000000028 L0L17
+              wave.s:66     .text:000000000000002a L0L18
+              wave.s:67     .text:000000000000002b L0L19
+              wave.s:68     .text:000000000000002e L0L20
+              wave.s:69     .text:0000000000000031 L0L21
+              wave.s:71     .text:0000000000000032 L0L22
+              wave.s:73     .text:0000000000000035 L0L23
+              wave.s:74     .text:0000000000000037 L0L24
+              wave.s:75     .text:000000000000003a L0L25
+              wave.s:77     .text:000000000000003c L0L26
+              wave.s:78     .text:000000000000003e L0L27
+              wave.s:80     .text:0000000000000040 L0L28
+              wave.s:81     .text:0000000000000042 L0L29
+              wave.s:83     .text:0000000000000045 low
+              wave.s:83     .text:0000000000000045 L0L30
+              wave.s:85     .text:0000000000000049 L0L31
+              wave.s:86     .text:000000000000004b L0L32
+              wave.s:88     .text:000000000000004d L0L33
+              wave.s:89     .text:000000000000004f L0L34
+              wave.s:90     .text:0000000000000052 L0L35
+              wave.s:93     .text:0000000000000054 L0L36
+M68HC11 GAS  wave.s 			page 4
+
+
+              wave.s:94     .text:0000000000000056 L0L37
+              wave.s:96     .text:0000000000000059 L0L38
+              wave.s:98     .text:000000000000005b L0L39
+              wave.s:101    .text:000000000000005e tmp
+
+NO UNDEFINED SYMBOLS

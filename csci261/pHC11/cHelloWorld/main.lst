@@ -1,0 +1,71 @@
+M68HC11 GAS  main.s 			page 1
+
+
+   1                 	;;;-----------------------------------------
+   2                 	;;; Start MC68HC11 gcc assembly output
+   3                 	;;; gcc compiler 3.3.6-m68hc1x-20060122
+   4                 	;;; Command:	/usr/lib/gcc-lib/m68hc11/3.3.6-m68hc1x-20060122/cc1 -quiet -D__GNUC__=3 -D__GNUC_MINOR
+   5                 	;;; Compiled:	Thu Mar 29 18:19:49 2012
+   6                 	;;; (META)compiled by GNU C version 4.2.3 (Debian 4.2.3-1).
+   7                 	;;;-----------------------------------------
+   8                 		.file	"main.c"
+   9                 		.mode mshort
+  10                 		; extern	wstr
+  11                 		; extern	strStr
+  12                 		; extern	wcrlf
+  13                 		.sect	.text
+  14                 		.globl	_start
+  15                 		.type	_start,@function
+  16                 	_start:
+  17                 	; Begin inline assembler code
+  18                 	#APP
+  19 0000 8E 00 00    		lds #_stack
+  20                 	; End of inline assembler code
+  21                 	#NO_APP
+  22 0003 CC 00 00    		ldd	#strStr
+  23 0006 BD 00 00    		bsr	wstr
+  24 0009 BD 00 00    		bsr	wcrlf
+  25 000c C6 58       		ldab	#88
+  26 000e F7 00 01    		stab	strStr+1
+  27 0011 CC 00 00    		ldd	#strStr
+  28 0014 BD 00 00    		bsr	wstr
+  29 0017 BD 00 00    		bsr	wcrlf
+  30                 	; Begin inline assembler code
+  31                 	#APP
+  32 001a 3F          		swi
+  33                 	; End of inline assembler code
+  34                 	#NO_APP
+  35 001b 39          		rts
+  36                 		.size	_start, .-_start
+  37                 	; Begin inline assembler code
+  38                 	#APP
+  39 001c 48 65 6C 6C 		strStr: .ascii "Hello World" 
+  39      6F 20 57 6F 
+  39      72 6C 64 
+  40 0027 04          	 .byte 0x4 
+  41                 	
+  42                 		.ident	"GCC: (GNU) 3.3.6-m68hc1x-20060122"
+M68HC11 GAS  main.s 			page 2
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+              main.s:0      .text:0000000000000000 L0F0
+              main.s:16     .text:0000000000000000 _start
+              main.s:19     .text:0000000000000000 L0L0
+              main.s:22     .text:0000000000000003 L0L1
+              main.s:39     .text:000000000000001c strStr
+              main.s:23     .text:0000000000000006 L0L2
+              main.s:24     .text:0000000000000009 L0L3
+              main.s:25     .text:000000000000000c L0L4
+              main.s:26     .text:000000000000000e L0L5
+              main.s:27     .text:0000000000000011 L0L6
+              main.s:28     .text:0000000000000014 L0L7
+              main.s:29     .text:0000000000000017 L0L8
+              main.s:32     .text:000000000000001a L0L9
+              main.s:35     .text:000000000000001b L0L10
+
+UNDEFINED SYMBOLS
+_stack
+wstr
+wcrlf

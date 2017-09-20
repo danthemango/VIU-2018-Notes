@@ -1,0 +1,354 @@
+M68HC11 GAS  pwcslib.s 			page 1
+
+
+   1                 	.include "pwcslib.h"
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "pwcslib.h" 
+   4                 	; Behaviour: 
+   5                 	;      Library of character and string utilities.
+   6                 	; Assumptions:
+   7                 	;      Routines only modify registers and the stack.
+   8                 	; Board:
+   9                 	;      CME11-E9-EVBU
+  10                 	; Author:
+  11                 	;      Peter Walsh
+  12                 	;============================================-=
+  13                 	
+  14                 	;---------------------------------------------
+  15                 	; Behaviour:
+  16                 	;    returns length of an ASCII string (excluding the terminator)
+  17                 	; Assumptions:
+  18                 	;    - The string is a null-terminated ASCII sequence of characters.
+  19                 	;    - The string length is in the range [0,64535]
+  20                 	; Restriction:
+  21                 	;    subroutine may only accesses registers and the stack
+  22                 	; Register and Memory Usage:
+  23                 	;    Precondition:
+  24                 	;      accd contains the address of the first character in the string
+  25                 	;    Postcondition:
+  26                 	;      accd contains the returned value
+  27                 	;    Destroys:
+  28                 	;      ccr
+  29                 	;---------------------------------------------
+  30                 	.global strLen
+  31                 	.global xstrLen
+  32                 	   
+  33                 	;---------------------------------------------
+  34                 	; Behaviour:
+  35                 	;    converts ascii character to upper case
+  36                 	; Assumptions:
+  37                 	;    character passed is alphabetic
+  38                 	; Restriction:
+  39                 	;    subroutine may only accesses registers and the stack
+  40                 	; Register and Memory Usage:
+  41                 	;    Precondition:
+  42                 	;      accb contains the character
+  43                 	;    Postcondition:
+  44                 	;      accb contains the returned value
+  45                 	;    Destroys:
+  46                 	;      ccr
+  47                 	;---------------------------------------------
+  48                 	.global toUpper
+  49                 	.global xtoUpper
+  50                 	
+  51                 	;---------------------------------------------
+  52                 	; Behaviour:
+  53                 	;    converts ascii character to lower case
+  54                 	; Assumptions:
+  55                 	;    character passed is alphabetic
+  56                 	; Restriction:
+M68HC11 GAS  pwcslib.s 			page 2
+
+
+  57                 	;    subroutine may only accesses registers and the stack
+  58                 	; Register and Memory Usage:
+  59                 	;    Precondition:
+  60                 	;      accb contains the character
+  61                 	;    Postcondition:
+  62                 	;      accb contains the returned value
+  63                 	;    Destroys:
+  64                 	;     ccr 
+  65                 	;---------------------------------------------
+  66                 	.global toLower
+  67                 	.global xtoLower
+  68                 	
+  69                 	;---------------------------------------------
+  70                 	; Behaviour:
+  71                 	;    test for numeric character (digit between '0' and '9' inclusive)
+  72                 	; Assumptions:
+  73                 	;    none
+  74                 	; Restriction:
+  75                 	;    subroutine may only accesses registers and the stack
+  76                 	; Register and Memory Usage:
+  77                 	;    Precondition:
+  78                 	;      accb contains the character
+  79                 	;    Postcondition:
+  80                 	;      accb contains the returned value (0 for false, 1 for true)
+  81                 	;    Destroys:
+  82                 	;      acca
+  83                 	;---------------------------------------------
+  84                 	.global isNumeric
+  85                 	.global xisNumeric
+  86                 	
+  87                 	;---------------------------------------------
+  88                 	; Behaviour:
+  89                 	;    test for uppercase character (character between 'A' and 'Z' inclusive)
+  90                 	; Assumptions:
+  91                 	;    none
+  92                 	; Restriction:
+  93                 	;    subroutine may only accesses registers and the stack
+  94                 	; Register and Memory Usage:
+  95                 	;    Precondition:
+  96                 	;      accb contains the character
+  97                 	;    Postcondition:
+  98                 	;      accb contains the returned value (0 for false, 1 for true)
+  99                 	;    Destroys:
+ 100                 	;      acca
+ 101                 	;---------------------------------------------
+ 102                 	.global isUpper
+ 103                 	.global xisUpper
+ 104                 	
+ 105                 	;---------------------------------------------
+ 106                 	; Behaviour:
+ 107                 	;    test for lowercase character (character between 'a' and 'z' inclusive)
+ 108                 	; Assumptions:
+ 109                 	;    none
+ 110                 	; Restriction:
+ 111                 	;    subroutine may only accesses registers and the stack
+ 112                 	; Register and Memory Usage:
+ 113                 	;    Precondition:
+M68HC11 GAS  pwcslib.s 			page 3
+
+
+ 114                 	;      accb contains the character
+ 115                 	;    Postcondition:
+ 116                 	;      accb contains the returned value (0 for false, 1 for true)
+ 117                 	;    Destroys:
+ 118                 	;      acca
+ 119                 	;---------------------------------------------
+ 120                 	.global isLower
+ 121                 	.global xisLower
+ 122                 	
+ 123                 	;---------------------------------------------
+ 124                 	; Behaviour:
+ 125                 	;    test for control character (character between NUL and US inclusive)
+ 126                 	;                                see page 605 of our text
+ 127                 	; Assumptions:
+ 128                 	;    none
+ 129                 	; Restriction:
+ 130                 	;    subroutine may only accesses registers and the stack
+ 131                 	; Register and Memory Usage:
+ 132                 	;    Precondition:
+ 133                 	;      accb contains the character
+ 134                 	;    Postcondition:
+ 135                 	;      accb contains the returned value (0 for false, 1 for true)
+ 136                 	;    Destroys:
+ 137                 	;      acca
+ 138                 	;---------------------------------------------
+ 139                 	.global isControl
+ 140                 	.global xisControl
+ 141                 	
+ 142                 	;---------------------------------------------
+ 143                 	; Behaviour:
+ 144                 	;    test for SP (space) character
+ 145                 	; Assumptions:
+ 146                 	;    none
+ 147                 	; Restriction:
+ 148                 	;    subroutine may only accesses registers and the stack
+ 149                 	; Register and Memory Usage:
+ 150                 	;    Precondition:
+ 151                 	;      accb contains the character
+ 152                 	;    Postcondition:
+ 153                 	;      accb contains the returned value (0 for false, 1 for true)
+ 154                 	;    Destroys:
+ 155                 	;      acca
+ 156                 	;---------------------------------------------
+ 157                 	.global isSpace
+ 158                 	.global xisSpace
+   2                 	;============================================-=
+   3                 	; File:
+   4                 	       .file "pwcslib.h"
+   5                 	; Behaviour:
+   6                 	;      Library of character and string utilities.
+   7                 	; Assumptions:
+   8                 	;      Routines only modify registers and the stack.
+   9                 	; Board:
+  10                 	;      CME11-E9-EVBU 
+  11                 	; Author:
+  12                 	;      Peter Walsh
+  13                 	;============================================-=
+M68HC11 GAS  pwcslib.s 			page 4
+
+
+  14                 	
+  15                 	;----------------------------------------------
+  16                 	;            Text Section (code and data)
+  17                 	;----------------------------------------------
+  18                 	.sect .text
+  19                 	
+  20                 	;=========================================================================
+  21 0000 3C          	strLen:       pshx              ; save registers
+  22 0001 18 3C       	              pshy
+  23                 	
+  24 0003 18 CE 00 00 	              ldy #0x0          ; counter 
+  25 0007 8F          	              xgdx              ; set X to index into the string
+  26                 	
+  27 0008 A6 00       	nextChar:     ldaa 0,x          ; read current indexed character into A
+  28 000a 27 05       	              beq countDone     ; branch to done if \0 was read 
+  29                 	
+  30 000c 18 08       	              iny               ; increment counter and index by 1
+  31 000e 08          	              inx
+  32                 	
+  33 000f 20 F7       	              bra nextChar      
+  34                 	
+  35 0011 18 8F       	countDone:    xgdy              ; save counter in D as return parameter
+  36                 	
+  37 0013 18 38       	              puly              ; restore registers
+  38 0015 38          	              pulx 
+  39 0016 39          	xstrLen:      rts
+  40                 	   
+  41                 	;=========================================================================
+  42                 	toUpper:
+  43 0017 C4 DF       	              andb #0xDF        ; clear 3rd most significant bit
+  44 0019 39          	xtoUpper:     rts
+  45                 	
+  46                 	;=========================================================================
+  47                 	toLower:
+  48 001a CA 20       	              orab #0x20        ; set 3rd most significant bit
+  49 001c 39          	xtoLower:     rts
+  50                 	
+  51                 	;=========================================================================
+  52                 	isNumeric :
+  53 001d 07          	              tpa                       ; save ccr on the stack
+  54 001e 36          	              psha
+  55 001f 3C          	              pshx                      ; save x on the stack
+  56 0020 37          	              pshb                      ; save char on the stack
+  57 0021 30          	              tsx                       ; set up stack frame pointer
+  58                 	
+  59 0022 C6 30       	              ldab #0x30                ; load accb with '0'
+  60 0024 E0 00       	              subb 0,x                  ; accb:=accb-ord(char)
+  61 0026 2E 0A       	              bgt notNumeric            ; branch to nonNumeric if accb > 0
+  62                 	
+  63 0028 C6 39       	              ldab #0x39                ; load accb with '9'
+  64 002a E0 00       	              subb 0,x                  ; accb:=accb-ord(char)
+  65 002c 2D 04       	              blt notNumeric            ; branch to nonNumeric if accb  < 0
+  66                 	
+  67 002e C6 01       	              ldab #0x1                 ; we have a digit, return true (1)
+  68 0030 20 02       	              bra isNumericCleanUp 
+  69                 	
+  70 0032 C6 00       	notNumeric:   ldab #0x0                 ; we dont have a digit, return false (0)
+M68HC11 GAS  pwcslib.s 			page 5
+
+
+  71                 	
+  72                 	isNumericCleanUp:                       ; clean stack and restore registers
+  73 0034 31          	              ins              
+  74 0035 38          	              pulx
+  75 0036 32          	              pula
+  76 0037 06          	              tap
+  77 0038 39          	xisNumeric:   rts
+  78                 	
+  79                 	;=========================================================================
+  80                 	isUpper :
+  81 0039 07          	              tpa                       ; save ccr on the stack
+  82 003a 36          	              psha
+  83 003b 3C          	              pshx                      ; save x on the stack
+  84 003c 37          	              pshb                      ; save char on the stack
+  85 003d 30          	              tsx                       ; set up stack frame pointer
+  86                 	
+  87 003e C6 41       	              ldab #0x41                ; load accb with 'A'
+  88 0040 E0 00       	              subb 0,x                  ; accb:=accb-ord(char)
+  89 0042 2E 0A       	              bgt notUpper              ; branch to nonUpper if accb > 0
+  90                 	
+  91 0044 C6 5A       	              ldab #0x5A                ; load accb with 'Z'
+  92 0046 E0 00       	              subb 0,x                  ; accb:=accb-ord(char)
+  93 0048 2D 04       	              blt notUpper              ; branch to nonUpper if accb  < 0
+  94                 	
+  95 004a C6 01       	              ldab #0x1                 ; we have an upper, return true (1)
+  96 004c 20 02       	              bra isUpperCleanUp 
+  97                 	
+  98 004e C6 00       	notUpper:     ldab #0x0                 ; we dont have an upper, return false (0)
+  99                 	
+ 100                 	isUpperCleanUp:                         ; clean stack and restore registers
+ 101 0050 31          	              ins              
+ 102 0051 38          	              pulx
+ 103 0052 32          	              pula
+ 104 0053 06          	              tap
+ 105 0054 39          	xisUpper:     rts
+ 106                 	
+ 107                 	;=========================================================================
+ 108                 	isLower :
+ 109 0055 07          	              tpa                       ; save ccr on the stack
+ 110 0056 36          	              psha
+ 111 0057 3C          	              pshx                      ; save x on the stack
+ 112 0058 37          	              pshb                      ; save char on the stack
+ 113 0059 30          	              tsx                       ; set up stack frame pointer
+ 114                 	
+ 115 005a C6 61       	              ldab #0x61                ; load accb with 'a'
+ 116 005c E0 00       	              subb 0,x                  ; accb:=accb-ord(char)
+ 117 005e 2E 0A       	              bgt notLower              ; branch to nonLower if accb > 0
+ 118                 	
+ 119 0060 C6 7A       	              ldab #0x7A                ; load accb with 'z'
+ 120 0062 E0 00       	              subb 0,x                  ; accb:=accb-ord(char)
+ 121 0064 2D 04       	              blt notLower              ; branch to nonLower if accb  < 0
+ 122                 	
+ 123 0066 C6 01       	              ldab #0x1                 ; we have a lower, return true (1)
+ 124 0068 20 02       	              bra isLowerCleanUp 
+ 125                 	
+ 126 006a C6 00       	notLower:     ldab #0x0                 ; we dont have a lower, return false (0)
+ 127                 	
+M68HC11 GAS  pwcslib.s 			page 6
+
+
+ 128                 	isLowerCleanUp:                         ; clean stack and restore registers
+ 129 006c 31          	              ins              
+ 130 006d 38          	              pulx
+ 131 006e 32          	              pula
+ 132 006f 06          	              tap
+ 133 0070 39          	xisLower:     rts
+ 134                 	
+ 135                 	;=========================================================================
+ 136                 	isControl:
+ 137 0071 07          	              tpa                       ; save ccr on the stack
+ 138 0072 36          	              psha
+ 139 0073 3C          	              pshx                      ; save x on the stack
+ 140 0074 37          	              pshb                      ; save char on the stack
+ 141 0075 30          	              tsx                       ; set up stack frame pointer
+ 142                 	
+ 143 0076 C6 00       	              ldab #0x00                ; load accb with NUL
+ 144 0078 E0 00       	              subb 0,x                  ; accb:=accb-ord(char)
+ 145 007a 2E 0A       	              bgt notControl            ; branch to nonControl if accb > 0
+ 146                 	
+ 147 007c C6 1F       	              ldab #0x1f                ; load accb with US
+ 148 007e E0 00       	              subb 0,x                  ; accb:=accb-ord(char)
+ 149 0080 2D 04       	              blt notControl            ; branch to nonControl if accb  < 0
+ 150                 	
+ 151 0082 C6 01       	              ldab #0x1                 ; we have a control char., return true (1)
+ 152 0084 20 02       	              bra isControlCleanUp 
+ 153                 	
+ 154 0086 C6 00       	notControl:   ldab #0x0                 ; we dont have a control char., return false (0)
+ 155                 	
+ 156                 	isControlCleanUp:                       ; clean stack and restore registers
+ 157 0088 31          	              ins              
+ 158 0089 38          	              pulx
+ 159 008a 32          	              pula
+ 160 008b 06          	              tap
+ 161 008c 39          	xisControl:   rts
+ 162                 	
+ 163                 	;=========================================================================
+ 164                 	isSpace:
+ 165 008d 07          	              tpa                       ; save ccr on the stack
+ 166 008e 36          	              psha
+ 167 008f C4 DF       	              andb #0xDF                ; results in 0 if a space
+ 168 0091 26 04       	              bne  notSpace 
+ 169 0093 C6 01       	              ldab #0x1                 ; we have a space, return true (1)
+ 170 0095 20 02       	              bra isSpaceCleanUp 
+ 171                 	
+ 172 0097 C6 00       	notSpace:     ldab #0x0                 ; we dont have an space, return false (0)
+ 173                 	isSpaceCleanUp:
+ 174 0099 32          	              pula
+ 175 009a 06          	              tap
+ 176 009b 39          	xisSpace:     rts
+ 177                 	
+ 178                 	.end

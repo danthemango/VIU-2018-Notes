@@ -1,0 +1,54 @@
+M68HC11 GAS  main.s 			page 1
+
+
+   1                 	;;;-----------------------------------------
+   2                 	;;; Start MC68HC11 gcc assembly output
+   3                 	;;; gcc compiler 3.0.4 m68hc1x-20020616
+   4                 	;;; Command:	/usr/lib/gcc-lib/m6811-elf/3.0.4/cc1 -lang-c -D__GNUC__=3 -D__GNUC_MINOR__=0 -D__GNUC_
+   5                 	;;; Compiled:	Sat Feb  1 00:59:36 2003
+   6                 	;;; (META)compiled by GNU C version 2.96 20000731 (Mandrake Linux 8.2 2.96-0.76mdk).
+   7                 	;;;-----------------------------------------
+   8                 		.file	"main.c"
+   9                 		.sect	.text
+  10                 		.globl	main
+  11                 		.type	main,@function
+  12                 	main:
+  13                 	; Begin inline assembler code
+  14                 	#APP
+  15 0000 0E          		cli
+  16                 	; End of inline assembler code
+  17                 	#NO_APP
+  18                 	.L2:
+  19 0001 20 FE       		bra	.L2
+  20                 	.Lfe1:
+  21                 		.size	main,.Lfe1-main
+  22                 		.globl	irqCount
+  23                 		.type	irqCount,@function
+  24                 	irqCount:
+  25 0003 7C 00 00    		inc	COUNT
+  26                 	; Begin inline assembler code
+  27                 	#APP
+  28                 		xirqCount:
+  29                 	; End of inline assembler code
+  30                 	#NO_APP
+  31 0006 3B          		rti
+  32                 	.Lfe2:
+  33                 		.size	irqCount,.Lfe2-irqCount
+  34                 		.comm	COUNT,1,1
+  35                 		.ident	"GCC: (GNU) 3.0.4 m68hc1x-20020616"
+M68HC11 GAS  main.s 			page 2
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+              main.s:0      .text:00000000 L0F0
+              main.s:12     .text:00000000 main
+              main.s:15     .text:00000000 L0L0
+              main.s:19     .text:00000001 L0L1
+              main.s:24     .text:00000003 irqCount
+              main.s:25     .text:00000003 L0L2
+                            *COM*:00000001 COUNT
+              main.s:28     .text:00000006 xirqCount
+              main.s:31     .text:00000006 L0L3
+
+NO UNDEFINED SYMBOLS

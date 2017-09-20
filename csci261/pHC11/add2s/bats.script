@@ -1,0 +1,47 @@
+include(CewDir/bin/cew.gdb)
+# Cew for asm Testing Script
+# Peter Walsh Feb 2001
+# Drm midterm 2005 ... provided without comments
+
+#------------ gdb/cew Initialization ---------------
+   #set remotebaud 9600
+   #target buffalo /dev/ttyS0
+   target sim
+   load add2.elf
+   set language asm
+   cew_Variables
+
+
+#-------------- Local Assumptions -----------------
+#  none
+
+#-------------- Local Constants -------------------
+#  none
+
+#-------------- Local Functions -------------------
+#  none
+
+#---------------- Test Cases ----------------------
+
+   tbreak *add2s
+   tbreak *xadd2s
+   run
+
+   set $p1={unsigned char}($sp+3)
+   set $p2={unsigned char}($sp+4)
+   set $bin=$b
+   set $xin=$x
+   set $yin=$y
+   set $spin=$sp
+
+   cew_Ncase(continue, $a, $p1+$p2)
+   cew_Ncase(, $b, $bin)
+   cew_Ncase(, $x, $xin)
+   cew_Ncase(, $y, $yin)
+   cew_Ncase(, $sp, $spin)
+
+
+   cew_Summary
+   quit
+
+

@@ -1,0 +1,76 @@
+M68HC11 GAS  main.s 			page 1
+
+
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "main.s" 
+   4                 	; Behaviour: 
+   5                 	;      Store in COUNT the  number of IRQs interrupts generated.
+   6                 	; Assumptions:
+   7                 	;      none
+   8                 	; Board:
+   9                 	;      CME11-E9-EVBU (with the PW link HACK)
+  10                 	; Author:
+  11                 	;      Peter Walsh
+  12                 	;============================================-=
+  13                 	
+  14                 	;----------------------------------------------
+  15                 	;            Text Section (code)
+  16                 	;----------------------------------------------
+  17                 	.sect .text
+  18                 	.global _start
+  19                 	
+  20                 	;---------------------------------------------
+  21                 	; Behaviour: 
+  22                 	;    Interrupt Service Routine
+  23                 	;    Store in COUNT the number of times this routine is invoked.
+  24                 	; Assumptions:
+  25                 	;    none
+  26                 	; Restriction:
+  27                 	;    none
+  28                 	; Register and Memory Usage:
+  29                 	;    Precondition:
+  30                 	;    Postcondition:
+  31                 	;       COUNT is incremented by 1
+  32                 	;    Destroys:
+  33                 	;       none
+  34                 	;---------------------------------------------
+  35                 	irqCount:
+  36 0000 B6 00 00    	               ldaa COUNT
+  37 0003 4C          	               inca
+  38 0004 B7 00 00    	               staa COUNT
+  39 0007 3B          	xirqCount:     rti
+  40                 	
+  41                 	_start: 
+  42 0008 8E 00 00    	               lds #_stack    ; initialize SP
+  43                 	
+  44 000b 0E          	               cli
+  45 000c 7E 00 00    	loop:	       jmp loop
+  46                 	;-----------------------------------------
+  47                 	;         Data Area
+  48                 	
+  49                 	;-----------------------------------------
+  50 000f 00          	COUNT: .byte  0
+  51                 	
+  52                 	.end
+M68HC11 GAS  main.s 			page 2
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.s
+              main.s:0      .text:0000000000000000 L0F0
+              main.s:41     .text:0000000000000008 _start
+              main.s:35     .text:0000000000000000 irqCount
+              main.s:36     .text:0000000000000000 L0L0
+              main.s:50     .text:000000000000000f COUNT
+              main.s:37     .text:0000000000000003 L0L1
+              main.s:38     .text:0000000000000004 L0L2
+              main.s:39     .text:0000000000000007 xirqCount
+              main.s:39     .text:0000000000000007 L0L3
+              main.s:42     .text:0000000000000008 L0L4
+              main.s:44     .text:000000000000000b L0L5
+              main.s:45     .text:000000000000000c loop
+              main.s:45     .text:000000000000000c L0L6
+
+UNDEFINED SYMBOLS
+_stack

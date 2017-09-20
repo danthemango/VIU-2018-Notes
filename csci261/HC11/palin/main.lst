@@ -1,0 +1,153 @@
+M68HC11 GAS  main.s 			page 1
+
+
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "main.s" 
+   4                 	; Behaviour: 
+   5                 	;      Determine if an ascii string of alpha-numeric characters is
+   6                 	;      a palindrome.
+   7                 	;      Accd is to be assigned  true (1) if the string is a 
+   8                 	;      Palindrome else it is to be assigned  false (0)
+   9                 	; Assumptions:
+  10                 	;      - The first character in the string is at STR.
+  11                 	;      - The string has at least 1 alpha-numeric character.
+  12                 	;      - The string is null-terminated.
+  13                 	;      - The string contains only alpha-numeric characters.
+  14                 	; Board:
+  15                 	;      CME11-E9-EVBU 
+  16                 	; Author:
+  17                 	;      Peter Walsh
+  18                 	;============================================-=
+  19                 	
+  20                 	;----------------------------------------------
+  21                 	;            Text Section (code)
+  22                 	;----------------------------------------------
+  23                 	.sect .text
+  24                 	.global _start
+  25                 	
+  26                 	_start: 
+  27 0000 8E 00 00    	               lds #_stack    ; initialize SP
+  28 0003 CC 00 00    	               ldd #STR
+  29 0006 BD 00 00    	               jsr isPal 
+  30 0009 CF          	               stop
+  31                 	;               swi            ; return control to the debugger
+  32                 	
+  33                 	
+  34                 	
+  35                 	;---------------------------------------------
+  36                 	; Behaviour: 
+  37                 	;    Return true (1) if string is a palindrome else return false (0)
+  38                 	; Assumptions:
+  39                 	;    String is a null-terminated ascii sequence of alpha-numeric characters 
+  40                 	;    containing at least 1 alpha-numeric character.
+  41                 	; Restriction:
+  42                 	;      - subroutine may only accesses registers and the stack
+  43                 	; Register and Memory Usage:
+  44                 	;    Precondition:
+  45                 	;      accd is the address of the first character in the string 
+  46                 	;    Postcondition:
+  47                 	;      accd contains the returned value 
+  48                 	;    Destroys:
+  49                 	;      ccr
+  50                 	;---------------------------------------------
+  51 000a 3C          	isPal:         pshx              ; save registers
+  52 000b 18 3C       	               pshy
+  53                 	
+  54 000d 18 8F       	               xgdy              ; set up space and initialize 
+  55 000f 18 3C       	               pshy              ; left string address
+  56                 	
+  57 0011 34          	               des               ; set up space for right string address
+M68HC11 GAS  main.s 			page 2
+
+
+  58 0012 34          	               des
+  59                 	
+  60 0013 18 30       	               tsy               ; set up stack frame pointer
+  61                 	
+  62 0015 18 EC 02    	               ldd 2,y           ; calculate right string address and 
+  63 0018 BD 00 00    	               jsr strLen        ; initialize corresponding local variable
+  64 001b 18 E3 02    	               addd 2,y
+  65 001e 8F          	               xgdx
+  66 001f 09          	               dex
+  67 0020 8F          	               xgdx
+  68 0021 18 ED 00    	               std 0,y
+  69                 	
+  70 0024 CD EE 00    	morePal:       ldx 0,y           ; compare char. at left address
+  71 0027 A6 00       	               ldaa 0,x          ; and right address
+  72 0029 CD EE 02    	               ldx 2,y
+  73 002c A1 00       	               cmpa 0,x
+  74 002e 26 21       	               bne noPal         ; if they differ, branch to noPal
+  75                 	
+  76 0030 18 EC 00    	               ldd 0,y           ; branch to yesPal if right <= left
+  77 0033 18 A3 02    	               subd 2,y
+  78 0036 23 14       	               bls yesPal        ; bls is branch if (Z + C) = 1
+  79                 	
+  80 0038 18 EC 00    	               ldd 0,y           ; decrement right address by 1
+  81 003b 8F          	               xgdx
+  82 003c 09          	               dex
+  83 003d 8F          	               xgdx
+  84 003e 18 ED 00    	               std 0,y
+  85                 	
+  86 0041 18 EC 02    	               ldd 2,y           ; increment left address by 1
+  87 0044 8F          	               xgdx
+  88 0045 08          	               inx
+  89 0046 8F          	               xgdx
+  90 0047 18 ED 02    	               std 2,y
+  91                 	
+  92 004a 20 D8       	               bra morePal
+  93                 	
+  94                 	
+  95 004c CC 00 01    	yesPal:        ldd #0x1          ; set return value to true
+  96 004f 20 03       	               bra palRes
+  97                 	
+  98 0051 CC 00 00    	noPal:         ldd #0x0          ; set return value to false
+  99                 	
+ 100 0054 31          	palRes:        ins               ; remove localvariables
+ 101 0055 31          	               ins
+ 102 0056 31          	               ins
+ 103 0057 31          	               ins
+ 104                 	
+ 105 0058 18 38       	               puly              ; restore registers
+ 106 005a 38          	               pulx
+ 107 005b 39          	xisPal:        rts
+ 108                 	
+ 109                 	;---------------------------------------------
+ 110                 	; Behaviour: 
+ 111                 	;    Returns the address of STR.
+ 112                 	;    This subroutine is for testing only (used by cew testbench) 
+ 113                 	; Assumptions:
+ 114                 	;    none
+M68HC11 GAS  main.s 			page 3
+
+
+ 115                 	; Restriction:
+ 116                 	;      - subroutine may only accesses registers and the stack
+ 117                 	; Register and Memory Usage:
+ 118                 	;    Precondition:
+ 119                 	;      none
+ 120                 	;    Postcondition:
+ 121                 	;      accd contains the returned value 
+ 122                 	;    Destroyed:
+ 123                 	;      ccr
+ 124                 	;---------------------------------------------
+ 125 005c CC 25 00    	malloc:        ldd #0x2500
+ 126 005f 39          	               rts
+ 127                 	
+ 128                 	;----------------------------------------------
+ 129                 	;            Data Section
+ 130                 	;----------------------------------------------
+ 131 0060 30 31 32 33 	STR: .asciz "01233210" ; reserves a total of 30 bytes (8 +1 (\n) +21)
+ 131      33 32 31 30 
+ 131      00 
+ 132 0069 01 01 01 01 	.space 21, 1
+ 132      01 01 01 01 
+ 132      01 01 01 01 
+ 132      01 01 01 01 
+ 132      01 01 01 01 
+ 133                 	
+ 134                 	#set up dummy frame pointer
+ 135                 	.global _.frame
+ 136                 	_.frame: .word
+ 137                 	
+ 138                 	.end

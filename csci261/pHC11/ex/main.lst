@@ -1,0 +1,98 @@
+M68HC11 GAS  main.s 			page 1
+
+
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "main.s" 
+   4                 	; Behaviour: 
+   5                 	;      Store in COUNT the  number of IRQs interrupts generated.
+   6                 	; Assumptions:
+   7                 	;      none
+   8                 	; Board:
+   9                 	;      CME11-E9-EVBU (with the PW link HACK)
+  10                 	; Author:
+  11                 	;      Peter Walsh
+  12                 	;============================================-=
+  13                 	
+  14                 	;----------------------------------------------
+  15                 	;            Text Section (code)
+  16                 	;----------------------------------------------
+  17                 	.sect .text
+  18                 	.global _start
+  19                 	
+  20                 	;---------------------------------------------
+  21                 	; Behaviour: 
+  22                 	; Assumptions:
+  23                 	; Restriction:
+  24                 	; Register and Memory Usage:
+  25                 	;---------------------------------------------
+  26                 	_start: 
+  27 0000 8E 00 00    	               lds #_stack    ; initialize SP
+  28 0003 86 7E       	               ldaa #0x7e
+  29 0005 B7 00 E2    	               staa 0x00e2
+  30 0008 CE 00 00    	               ldx #icLight
+  31 000b 8F          	               xgdx
+  32 000c FD 00 E3    	               std 0x00e3
+  33                 	
+  34 000f 86 01       	               ldaa #0x01
+  35 0011 B7 10 21    	               staa 0x1021 ; TCTL2
+  36                 	
+  37 0014 86 01       	               ldaa #0x01
+  38 0016 B7 10 22    	               staa 0x1022 ; TMSK1
+  39                 	               
+  40 0019 86 01       	               ldaa #0x01   ; TFLG1
+  41 001b B7 10 23    	               staa 0x1023
+  42                 	
+  43 001e 0E          	               cli
+  44 001f 7E 00 00    	loop:	       jmp loop
+  45                 	
+  46                 	icLight:
+  47 0022 86 40       	               ldaa #0x40 
+  48 0024 B7 10 00    	               staa 0x1000
+  49                 	
+  50 0027 86 01       	               ldaa #0x01   ; TFLG1
+  51 0029 B7 10 23    	               staa 0x1023
+  52                 	
+  53 002c 3B          	xicLight:     rti
+  54                 	
+  55                 	;-----------------------------------------
+  56                 	;         Data Area
+  57                 	
+M68HC11 GAS  main.s 			page 2
+
+
+  58                 	;-----------------------------------------
+  59                 	
+  60                 	.end
+M68HC11 GAS  main.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.s
+              main.s:0      .text:00000000 L0F0
+              main.s:26     .text:00000000 _start
+              main.s:27     .text:00000000 L0L0
+              main.s:28     .text:00000003 L0L1
+              main.s:29     .text:00000005 L0L2
+              main.s:30     .text:00000008 L0L3
+              main.s:46     .text:00000022 icLight
+              main.s:31     .text:0000000b L0L4
+              main.s:32     .text:0000000c L0L5
+              main.s:34     .text:0000000f L0L6
+              main.s:35     .text:00000011 L0L7
+              main.s:37     .text:00000014 L0L8
+              main.s:38     .text:00000016 L0L9
+              main.s:40     .text:00000019 L0L10
+              main.s:41     .text:0000001b L0L11
+              main.s:43     .text:0000001e L0L12
+              main.s:44     .text:0000001f loop
+              main.s:44     .text:0000001f L0L13
+              main.s:47     .text:00000022 L0L14
+              main.s:48     .text:00000024 L0L15
+              main.s:50     .text:00000027 L0L16
+              main.s:51     .text:00000029 L0L17
+              main.s:53     .text:0000002c xicLight
+              main.s:53     .text:0000002c L0L18
+
+UNDEFINED SYMBOLS
+_stack

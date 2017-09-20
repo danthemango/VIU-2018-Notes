@@ -1,0 +1,22 @@
+Machine code and data are held in the .text section
+when we assemble/compile code without a startup-file.
+See note below.
+
+Peter W
+
+> The default startup file (crt0) installs the data
+> section by copying it
+> from text section (ie in ROM) to the data section.
+> The BSS is also cleared
+> as part of this initialization. The linker (via the
+> linker script) is
+> responsible for putting the data section content
+> somewhere in the text
+> section (ie, in ROM).
+>
+> If you don't use a startup file, the data section
+> and BSS are not initialized
+> unless you start your program with some monitor
+> (PCBUG for example). In that
+> case, when you translate to S19, you need the data
+> section.

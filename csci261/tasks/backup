@@ -1,0 +1,13 @@
+00000000 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+00000000 Daniel Guenther
+00000000 CSCI 261 Section 2
+00000000 Task 2
+00000000 2016-02-11
+00000000 
+00000000 Behaviour
+00000000      main passes an address a (big endian) to the subroutine 
+00000000      the parameter is passed on the stack
+00000000      the subroutine implements the following  pseudo code
+00000000         *a=*a+1 (increment the value referenced by a by 1) 
+00000000 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+00000000 

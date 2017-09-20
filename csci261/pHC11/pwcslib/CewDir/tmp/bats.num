@@ -1,0 +1,535 @@
+include(CewDir/bin/cew.gdb)
+# Cew for asm Testing Script
+# Peter Walsh Mar 2002
+
+#------------ gdb/cew Initialization ---------------
+   #set remotebaud 9600
+   #target buffalo /dev/ttyS0
+   # NOTE... only tested on the simulator
+   target sim
+   load main.elf
+   set language asm
+   cew_Variables
+
+#-------------- Local Assumptions -----------------
+#   strlen.s has a malloc() routine that always returns the
+#   address of STR
+
+#-------------- Local Constants -------------------
+   set $MAXLEN=30
+
+#-------------- Local Functions -------------------
+# Behaviour:
+#    Generate string at STR with values 1, 2, 3 .... $arg0, \0
+# Assumptions:
+#    $arg0 > 0
+define strGen
+   set $i=1
+   set $addr=(unsigned char *)&STR
+   while ($i <= $arg0)
+      set {unsigned char}$addr=$i
+      set $i++
+      set $addr++
+   end
+   set {unsigned char}$addr=0x0
+end
+
+#---------------- Test Cases -----------------------
+   set {short int}(&smc+1)=strLen
+   #tests for strLen
+   #using the string from the main.s file
+   tbreak *strLen
+   tbreak *xstrLen
+   run 
+   set $d=(unsigned char *)&STR
+   set $xin=$x
+   set $yin=$y
+   set $spin=$sp
+   cew_Ncase( 48 ,
+ continue, $d 
+, 8)
+   cew_Ncase( 49 ,
+ , $x  
+, $xin)
+   cew_Ncase( 50 ,
+ , $y  
+, $yin)
+   cew_Ncase( 51 ,
+ , $sp  
+, $spin)
+   set $cnt=0
+   while ($cnt < $MAXLEN)
+      strGen $cnt
+      tbreak *strLen
+      tbreak *xstrLen
+      run
+      set $d=(unsigned char *)&STR
+      set $xin=$x
+      set $yin=$y
+      set $spin=$sp
+      cew_Ncase( 62 ,
+ continue, $d 
+, $cnt)
+      cew_Ncase( 63 ,
+ , $x  
+, $xin)
+      cew_Ncase( 64 ,
+ , $y  
+, $yin)
+      cew_Ncase( 65 ,
+ , $sp  
+, $spin)
+      set $cnt++
+   end
+
+   #tests for strLen
+   #using  malloc()
+
+   tbreak *strLen
+   tbreak *xstrLen
+   run
+   set $testString="Happy St Patricks day"
+   set $d=(unsigned char *)&STR
+   set $x=$xin
+   set $y=$yin
+   set $spin=$sp
+   cew_Ncase( 80 ,
+ continue, $d 
+, 21)
+   cew_Ncase( 81 ,
+ , $x  
+, $xin)
+   cew_Ncase( 82 ,
+ , $y  
+, $yin)
+   cew_Ncase( 83 ,
+ , $sp  
+, $spin)
+
+   set {short int}(&smc+1)=toUpper
+   #tests for toUpper
+
+   set $i='a'
+   set $ans='A'
+   while ($i <= 'z')
+
+      tbreak *toUpper
+      tbreak *xtoUpper
+      run
+      set $b=$i 
+      set $ccrin=$ccr
+      cew_Ncase( 97 ,
+ continue, $b  
+, $ans)
+      cew_Ncase( 98 ,
+ , $ccr 
+, $ccrin)
+   
+      set $i++
+      set $ans++
+   end
+
+   set {short int}(&smc+1)=toLower
+   #tests for toLower
+
+   set $i='A'
+   set $ans='a'
+   while ($i <= 'Z')
+
+      tbreak *toLower
+      tbreak *xtoLower
+      run
+      set $b=$i 
+      set $ccrin=$ccr
+      cew_Ncase( 116 ,
+ continue, $b  
+, $ans)
+      cew_Ncase( 117 ,
+ , $ccr 
+, $ccrin)
+   
+      set $i++
+      set $ans++
+   end
+
+   set {short int}(&smc+1)=isNumeric
+   #tests for isNumeric
+   
+   # test for '/' and ':' 
+   tbreak *isNumeric
+   tbreak *xisNumeric
+   run
+   set $b='/'
+   set $spin=$sp
+   set $xin=$x
+   set $yin=$y
+   set $ccrin=$ccr
+   cew_Ncase( 135 ,
+ continue, $b  
+, 0)
+   cew_Ncase( 136 ,
+ , $sp 
+, $spin)
+   cew_Ncase( 137 ,
+ , $x 
+, $xin)
+   cew_Ncase( 138 ,
+ , $y 
+, $yin)
+   cew_Ncase( 139 ,
+ , $ccr 
+, $ccrin)
+
+   tbreak *isNumeric
+   tbreak *xisNumeric
+   run
+   set $b=':'
+   set $spin=$sp
+   set $xin=$x
+   set $yin=$y
+   set $ccrin=$ccr
+   cew_Ncase( 149 ,
+ continue, $b  
+, 0)
+   cew_Ncase( 150 ,
+ , $sp 
+, $spin)
+   cew_Ncase( 151 ,
+ , $x 
+, $xin)
+   cew_Ncase( 152 ,
+ , $y 
+, $yin)
+   cew_Ncase( 153 ,
+ , $ccr 
+, $ccrin)
+
+   set $i='0'
+   while ($i <= '9')
+
+      tbreak *isNumeric
+      tbreak *xisNumeric
+      run
+      set $b=$i
+      set $spin=$sp
+      set $xin=$x
+      set $yin=$y
+      set $ccrin=$ccr
+      cew_Ncase( 166 ,
+ continue, $b  
+, 1)
+      cew_Ncase( 167 ,
+ , $sp 
+, $spin)
+      cew_Ncase( 168 ,
+ , $x 
+, $xin)
+      cew_Ncase( 169 ,
+ , $y 
+, $yin)
+      cew_Ncase( 170 ,
+ , $ccr 
+, $ccrin)
+  
+      set $i++
+   end
+
+   set {short int}(&smc+1)=isUpper
+   #tests for isUpper
+   
+   # test for '@' and '[' 
+   tbreak *isUpper
+   tbreak *xisUpper
+   run
+   set $b='@'
+   set $spin=$sp
+   set $xin=$x
+   set $yin=$y
+   set $ccrin=$ccr
+   cew_Ncase( 187 ,
+ continue, $b  
+, 0)
+   cew_Ncase( 188 ,
+ , $sp 
+, $spin)
+   cew_Ncase( 189 ,
+ , $x 
+, $xin)
+   cew_Ncase( 190 ,
+ , $y 
+, $yin)
+   cew_Ncase( 191 ,
+ , $ccr 
+, $ccrin)
+
+   tbreak *isUpper
+   tbreak *xisUpper
+   run
+   set $b='['
+   set $spin=$sp
+   set $xin=$x
+   set $yin=$y
+   set $ccrin=$ccr
+   cew_Ncase( 201 ,
+ continue, $b  
+, 0)
+   cew_Ncase( 202 ,
+ , $sp 
+, $spin)
+   cew_Ncase( 203 ,
+ , $x 
+, $xin)
+   cew_Ncase( 204 ,
+ , $y 
+, $yin)
+   cew_Ncase( 205 ,
+ , $ccr 
+, $ccrin)
+
+   set $i='A'
+   while ($i <= 'Z')
+
+      tbreak *isUpper
+      tbreak *xisUpper
+      run
+      set $b=$i
+      set $spin=$sp
+      set $xin=$x
+      set $yin=$y
+      set $ccrin=$ccr
+      cew_Ncase( 218 ,
+ continue, $b  
+, 1)
+      cew_Ncase( 219 ,
+ , $sp 
+, $spin)
+      cew_Ncase( 220 ,
+ , $x 
+, $xin)
+      cew_Ncase( 221 ,
+ , $y 
+, $yin)
+      cew_Ncase( 222 ,
+ , $ccr 
+, $ccrin)
+  
+      set $i++
+   end
+
+   set {short int}(&smc+1)=isLower
+   #tests for isLower
+   
+   # test for '`' and '{' 
+   tbreak *isLower
+   tbreak *xisLower
+   run
+   set $b=0x60
+   set $spin=$sp
+   set $xin=$x
+   set $yin=$y
+   set $ccrin=$ccr
+   cew_Ncase( 239 ,
+ continue, $b  
+, 0)
+   cew_Ncase( 240 ,
+ , $sp 
+, $spin)
+   cew_Ncase( 241 ,
+ , $x 
+, $xin)
+   cew_Ncase( 242 ,
+ , $y 
+, $yin)
+   cew_Ncase( 243 ,
+ , $ccr 
+, $ccrin)
+
+   tbreak *isLower
+   tbreak *xisLower
+   run
+   set $b='}'
+   set $spin=$sp
+   set $xin=$x
+   set $yin=$y
+   set $ccrin=$ccr
+   cew_Ncase( 253 ,
+ continue, $b  
+, 0)
+   cew_Ncase( 254 ,
+ , $sp 
+, $spin)
+   cew_Ncase( 255 ,
+ , $x 
+, $xin)
+   cew_Ncase( 256 ,
+ , $y 
+, $yin)
+   cew_Ncase( 257 ,
+ , $ccr 
+, $ccrin)
+
+   set $i='a'
+   while ($i <= 'z')
+
+      tbreak *isLower
+      tbreak *xisLower
+      run
+      set $b=$i
+      set $spin=$sp
+      set $xin=$x
+      set $yin=$y
+      set $ccrin=$ccr
+      cew_Ncase( 270 ,
+ continue, $b  
+, 1)
+      cew_Ncase( 271 ,
+ , $sp 
+, $spin)
+      cew_Ncase( 272 ,
+ , $x 
+, $xin)
+      cew_Ncase( 273 ,
+ , $y 
+, $yin)
+      cew_Ncase( 274 ,
+ , $ccr 
+, $ccrin)
+  
+      set $i++
+   end
+
+   set {short int}(&smc+1)=isControl
+   #tests for isControl
+   
+   # test for 0xFF and SP 
+   tbreak *isControl
+   tbreak *xisControl
+   run
+   set $b=0xFF
+   set $spin=$sp
+   set $xin=$x
+   set $yin=$y
+   set $ccrin=$ccr
+   cew_Ncase( 291 ,
+ continue, $b  
+, 0)
+   cew_Ncase( 292 ,
+ , $sp 
+, $spin)
+   cew_Ncase( 293 ,
+ , $x 
+, $xin)
+   cew_Ncase( 294 ,
+ , $y 
+, $yin)
+   cew_Ncase( 295 ,
+ , $ccr 
+, $ccrin)
+
+   tbreak *isControl
+   tbreak *xisControl
+   run
+   set $b=' '
+   set $spin=$sp
+   set $xin=$x
+   set $yin=$y
+   set $ccrin=$ccr
+   cew_Ncase( 305 ,
+ continue, $b  
+, 0)
+   cew_Ncase( 306 ,
+ , $sp 
+, $spin)
+   cew_Ncase( 307 ,
+ , $x 
+, $xin)
+   cew_Ncase( 308 ,
+ , $y 
+, $yin)
+   cew_Ncase( 309 ,
+ , $ccr 
+, $ccrin)
+
+   set $i=0x00
+   while ($i <= 0x1f)
+
+      tbreak *isControl
+      tbreak *xisControl
+      run
+      set $b=$i
+      set $spin=$sp
+      set $xin=$x
+      set $yin=$y
+      set $ccrin=$ccr
+      cew_Ncase( 322 ,
+ continue, $b  
+, 1)
+      cew_Ncase( 323 ,
+ , $sp 
+, $spin)
+      cew_Ncase( 324 ,
+ , $x 
+, $xin)
+      cew_Ncase( 325 ,
+ , $y 
+, $yin)
+      cew_Ncase( 326 ,
+ , $ccr 
+, $ccrin)
+  
+      set $i++
+   end
+
+   set {short int}(&smc+1)=isSpace
+   #tests for isSpace
+   
+   tbreak *isSpace
+   tbreak *xisSpace
+   run
+   set $b=0x20
+   set $spin=$sp
+   set $xin=$x
+   set $yin=$y
+   set $ccrin=$ccr
+   cew_Ncase( 342 ,
+ continue, $b  
+, 1)
+   cew_Ncase( 343 ,
+ , $sp 
+, $spin)
+   cew_Ncase( 344 ,
+ , $x 
+, $xin)
+   cew_Ncase( 345 ,
+ , $y 
+, $yin)
+   cew_Ncase( 346 ,
+ , $ccr 
+, $ccrin)
+
+   tbreak *isSpace
+   tbreak *xisSpace
+   run
+   set $b=0x21
+   set $spin=$sp
+   set $xin=$x
+   set $yin=$y
+   set $ccrin=$ccr
+   cew_Ncase( 356 ,
+ continue, $b  
+, 0)
+   cew_Ncase( 357 ,
+ , $sp 
+, $spin)
+   cew_Ncase( 358 ,
+ , $x 
+, $xin)
+   cew_Ncase( 359 ,
+ , $y 
+, $yin)
+   cew_Ncase( 360 ,
+ , $ccr 
+, $ccrin)
+
+   cew_Summary
+   quit

@@ -1,0 +1,45 @@
+include(CewDir/bin/cew.gdb)
+# Cew for asm Testing Script
+# Peter Walsh Feb 2001
+
+#------------ gdb/cew Initialization ---------------
+   set remotebaud 9600
+   target buffalo cscixtst:3001
+   #target sim
+   load sigman.elf
+   set language asm
+   cew_Variables
+
+#-------------- Local Assumptions ------------------
+#  none
+
+#-------------- Local Constants --------------------
+#  none
+
+#-------------- Local Functions --------------------
+#  none
+
+#---------------- Test Cases -----------------------
+   cew_Ncase( 23 ,
+ run,  {unsigned char}&SUM  
+, 0xa) 
+   # changing memory as demonstrated below is not recommended
+   # it is included here just to show the 'power' of gdb's scripting lang.
+   cew_Ncase( 26 ,
+ set {unsigned char}0x2002=3 
+
+  run,  {unsigned char}&SUM  
+, 0x6)
+   cew_Ncase( 27 ,
+ set {unsigned char}0x2002=4 
+
+  run,  {unsigned char}&SUM  
+, 0xa)
+   cew_Ncase( 28 ,
+ set {unsigned char}0x2002=1 
+
+  run,  {unsigned char}&SUM  
+, 0x1)
+
+   cew_Summary
+   quit

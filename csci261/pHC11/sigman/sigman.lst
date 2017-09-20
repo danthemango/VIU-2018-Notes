@@ -1,0 +1,47 @@
+M68HC11 GAS  sigman.s 			page 1
+
+
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "sigman.s" 
+   4                 	; Behaviour: 
+   5                 	;      Calculate sigma N and store the
+   6                 	;      result in SUM
+   7                 	; Assumptions:
+   8                 	;      N is a program constant > 0
+   9                 	; Board:
+  10                 	;      CME11-E9-EVBU 
+  11                 	; Author/Date:
+  12                 	;      Peter Walsh Feb 2001
+  13                 	;      revised Feb 2002
+  14                 	;============================================-=
+  15                 	
+  16                 	;----------------------------------------------
+  17                 	;            Text Section (code and data)
+  18                 	;----------------------------------------------
+  19                 	.sect .text
+  20                 	.global _start
+  21                 	
+  22                 	_start: 
+  23 0000 4F          	      clra           ; clear acca
+  24 0001 C6 04       	      ldab #N        ; load accb with the value of N
+  25                 	loop:
+  26 0003 1B          	      aba            ; acca:= acca + accb
+  27 0004 5A          	      decb           ; decrement accb
+  28 0005 26 FC       	      bne loop       ; if accb != 0 then goto loop
+  29 0007 B7 00 00    	      staa SUM       ; store acca in memory referenced by SUM 
+  30 000a 3F          	      swi
+  31                 	      #stop
+  32                 	
+  33                 	;----------------------------------------------
+  34                 	;            Data Section
+  35                 	;----------------------------------------------
+  36                 	set N, 4
+  37 000b 00          	SUM: .byte 0
+  38                 	
+  39                 	#set up dummy frame pointer
+  40                 	.global _.frame
+  41                 	_.frame: .word
+  42                 	
+  43                 	
+  44                 	.end

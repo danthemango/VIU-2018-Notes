@@ -1,0 +1,24 @@
+00000000                n is taken from port B
+   pushext PSW          save PSW
+   pushimm 
+   pushext B            replace PSW with n
+   popext PSW
+   pushimm RET-L
+   pushimm RET-H
+   jnz X                if n != 0, goto X
+   pop                  R wasn't needed
+   pop
+   pushimm 1
+   popext A
+R: popext PSW           restore PSW
+   halt
+00000000 subroutine
+X: pushimm 2
+   popext A
+   pushimm 0            0 -> PSW
+   popext PSW
+   popext X+            load R
+   popext X+
+   jnz 
+00000000                return address should be loaded here
+00000000

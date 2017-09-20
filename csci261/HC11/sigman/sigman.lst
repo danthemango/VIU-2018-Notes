@@ -1,0 +1,46 @@
+M68HC11 GAS  sigman.s 			page 1
+
+
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "sigman.s" 
+   4                 	; Behaviour: 
+   5                 	;      Calculate sigma N and store the
+   6                 	;      result in SUM
+   7                 	; Assumptions:
+   8                 	;      N is a program constant >= 0
+   9                 	; Board:
+  10                 	;      CME11-E9-EVBU 
+  11                 	; Author/Date:
+  12                 	;      Peter Walsh Feb 2001
+  13                 	;      revised Feb 2002
+  14                 	;
+  15                 	;      modified by Daniel Guenther
+  16                 	;      CSCI261, Section 2
+  17                 	;      Task 4.a
+  18                 	;      2016-02-11
+  19                 	;============================================-=
+  20                 	
+  21                 	;----------------------------------------------
+  22                 	;            Text Section (code and data)
+  23                 	;----------------------------------------------
+  24                 	.sect .text
+  25                 	.global _start
+  26                 	
+  27                 	_start: 
+  28 0000 4F          	      clra           ; clear acca
+  29 0001 C6 04       	      ldab #N        ; load accb with the value of N
+  30                 	loop:
+  31 0003 1B          	      aba            ; acca:= acca + accb
+  32 0004 5A          	      decb           ; decrement accb
+  33 0005 2C FC       	      bge loop       ; if accb != 0 then goto loop
+  34 0007 B7 00 00    	end:  staa SUM       ; store acca in memory referenced by SUM 
+  35 000a CF          	      stop
+  36                 	
+  37                 	;----------------------------------------------
+  38                 	;            Data Section
+  39                 	;----------------------------------------------
+  40                 	set N, 4
+  41 000b 00          	SUM: .byte 0
+  42                 	
+  43                 	.end

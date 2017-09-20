@@ -1,0 +1,13 @@
+M68HC11 GAS  foolib.s 			page 1
+
+
+   1                 	;.global foo
+   2                 	;
+   3                 	;foo:
+   4                 	
+M68HC11 GAS  foolib.s 			page 2
+
+
+NO DEFINED SYMBOLS
+
+NO UNDEFINED SYMBOLS

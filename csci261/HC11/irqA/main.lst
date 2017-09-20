@@ -1,0 +1,138 @@
+M68HC11 GAS  main.s 			page 1
+
+
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "main.s" 
+   4                 	; Behaviour: 
+   5                 	;      Store in COUNT the  number of IRQs interrupts generated.
+   6                 	; Assumptions:
+   7                 	;      none
+   8                 	; Board:
+   9                 	;      CME11-E9-EVBU (with the PW link HACK)
+  10                 	; Author:
+  11                 	;      Peter Walsh
+  12                 	; Modified by:
+  13                 	;      Daniel Guenther on 2016-03-10
+  14                 	;============================================-=
+  15                 	
+  16                 	;----------------------------------------------
+  17                 	;            Text Section (code)
+  18                 	;----------------------------------------------
+  19                 	.sect .text
+  20                 	.global _start
+  21                 	
+  22                 	;---------------------------------------------
+  23                 	; Behaviour: 
+  24                 	;    Interrupt Service Routine
+  25                 	;    Store in COUNT the number of times this routine is invoked.
+  26                 	; Assumptions:
+  27                 	;    none
+  28                 	; Restriction:
+  29                 	;    none
+  30                 	; Register and Memory Usage:
+  31                 	;    Precondition:
+  32                 	;    Postcondition:
+  33                 	;       COUNT is incremented by 1
+  34                 	;    Destroys:
+  35                 	;       none
+  36                 	;---------------------------------------------
+  37                 	irqCount:
+  38 0000 B6 00 00    	               ldaa COUNT
+  39 0003 4C          	               inca
+  40 0004 B7 00 00    	               staa COUNT
+  41 0007 3B          	xirqCount:     rti
+  42                 	
+  43                 	_start: 
+  44 0008 BD 00 00    	               jsr setIRQ
+  45 000b 8E 00 00    	               lds #_stack    ; initialize SP
+  46                 	
+  47 000e 0E          	               cli
+  48 000f 7E 00 00    	loop:	         jmp loop
+  49                 	
+  50                 	;---------------------------------------------
+  51                 	; Behaviour: 
+  52                 	;   IRQ setter
+  53                 	;   specifies where to jump to when IRQ detected
+  54                 	; Assumptions:
+  55                 	;    none
+  56                 	; Restriction:
+  57                 	;    none
+M68HC11 GAS  main.s 			page 2
+
+
+  58                 	; Register and Memory Usage:
+  59                 	;    Precondition:
+  60                 	;        none
+  61                 	;    Postcondition:
+  62                 	;        IRQ interrupts will jump to a subroutine (hardcoded)
+  63                 	;    Destroys:
+  64                 	;        I don't know, good luck
+  65                 	;---------------------------------------------
+  66                 	
+  67                 	set jmpAddress, irqCount            ; address we want to jump to
+  68                 	set jmpOpcode, 0x7e                 ; the jmp opcode
+  69                 	   ; note: the following addresses are specific to the Buffalo Monitor
+  70                 	set jmpCommandPosition, 0xee        ; position where we need a jump command
+  71                 	set IRQjmpAddress, 0xef             ; where we want to put the address 
+  72                 	
+  73                 	setIRQ:   
+  74 0012 36          	               psha                 ; save the D register
+  75 0013 37          	               pshb
+  76                 	
+  77 0014 C6 7E       	               ldab #jmpOpcode      ; put the 'jmp' command in the jump table spot for IRQ
+  78 0016 F7 00 EE    	               stab jmpCommandPosition
+  79 0019 CC 00 00    	               ldd #jmpAddress      ; put the address of our IRQ subrountine in the jump table
+  80 001c FD 00 EF    	               std IRQjmpAddress
+  81                 	
+  82 001f 33          	               pulb                 ; restore the D register
+  83 0020 32          	               pula
+  84 0021 39          	               rts
+  85                 	
+  86                 	;-----------------------------------------
+  87                 	;         Data Area
+  88                 	;-----------------------------------------
+  89 0022 00          	COUNT: .byte  0
+  90                 	
+  91                 	#set up dummy frame pointer
+  92                 	.global _.frame
+  93                 	_.frame: .word
+  94                 	
+  95                 	.end
+M68HC11 GAS  main.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.s
+              main.s:0      .text:0000000000000000 L0F0
+              main.s:43     .text:0000000000000008 _start
+              main.s:37     .text:0000000000000000 irqCount
+              main.s:38     .text:0000000000000000 L0L0
+              main.s:89     .text:0000000000000022 COUNT
+              main.s:39     .text:0000000000000003 L0L1
+              main.s:40     .text:0000000000000004 L0L2
+              main.s:41     .text:0000000000000007 xirqCount
+              main.s:41     .text:0000000000000007 L0L3
+              main.s:44     .text:0000000000000008 L0L4
+              main.s:73     .text:0000000000000012 setIRQ
+              main.s:45     .text:000000000000000b L0L5
+              main.s:47     .text:000000000000000e L0L6
+              main.s:48     .text:000000000000000f loop
+              main.s:48     .text:000000000000000f L0L7
+              main.s:37     .text:0000000000000000 jmpAddress
+              main.s:68     *ABS*:000000000000007e jmpOpcode
+              main.s:70     *ABS*:00000000000000ee jmpCommandPosition
+              main.s:71     *ABS*:00000000000000ef IRQjmpAddress
+              main.s:74     .text:0000000000000012 L0L8
+              main.s:75     .text:0000000000000013 L0L9
+              main.s:77     .text:0000000000000014 L0L10
+              main.s:78     .text:0000000000000016 L0L11
+              main.s:79     .text:0000000000000019 L0L12
+              main.s:80     .text:000000000000001c L0L13
+              main.s:82     .text:000000000000001f L0L14
+              main.s:83     .text:0000000000000020 L0L15
+              main.s:84     .text:0000000000000021 L0L16
+              main.s:93     .text:0000000000000023 _.frame
+
+UNDEFINED SYMBOLS
+_stack

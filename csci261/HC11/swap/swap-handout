@@ -1,0 +1,121 @@
+
+>>>>>bats.script
+
+include(CewDir/bin/cew.gdb)
+# Cew for asm Testing Script
+# Peter Walsh Feb 2001
+
+#------------ gdb/cew Initialization ---------------
+   #set remotebaud 9600
+   #target buffalo /dev/ttyS0
+   target sim
+   load swap.elf
+   set language asm
+   cew_Variables
+
+
+#-------------- Local Assumptions -----------------
+#  none
+
+#-------------- Local Constants -------------------
+#  none
+
+#-------------- Local Functions -------------------
+#  none
+
+#---------------- Test Cases ----------------------
+   # verify swap behaviour using assembled data values for AA and BB
+   cew_Ncase(,  {unsigned char}&AA , 0x3) 
+   cew_Ncase(,  {unsigned char}&BB , 0x4) 
+   cew_Ncase(run, {unsigned char}&AA , 0x4) 
+   cew_Ncase(, {unsigned char}&BB , 0x3) 
+
+   # modify data values for AA and BB and verify swap behaviour
+   cew_Ncase(set {unsigned char}&AA=6; set {unsigned char}&BB=7; run, {unsigned char}&AA , 0x7) 
+   cew_Ncase(, {unsigned char}&BB , 0x6) 
+
+   # check register values
+   cew_Ncase(, $a , 0x7) 
+   cew_Ncase(, $b , 0x6) 
+
+   # check input/output reg parameters and ccr
+   set {unsigned char}&AA=6 
+   set {unsigned char}&BB=7 
+   tbreak *swapab
+   tbreak *xswapab
+   cew_Ncase(run, $a, 6)
+   set $ccrin=$ccr
+   cew_Ncase(, $b, 7)
+   cew_Ncase(continue, $a, 7)
+   cew_Ncase(, $b, 6)
+   cew_Ncase(, $ccr, $ccrin)
+
+   cew_Summary
+   quit
+
+
+>>>>>swap.lst
+
+M68HC11 GAS  swap.s 			page 1
+
+
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "swap.s" 
+   4                 	; Behaviour: 
+   5                 	;      Swap the contents of AA and BB
+   6                 	; Assumptions:
+   7                 	;      none
+   8                 	; Board:
+   9                 	;      CME11-E9-EVBU 
+  10                 	; Author/Date:
+  11                 	;      Peter Walsh Feb 2001
+  12                 	;      Revised Feb 2002
+  13                 	;      Revised Jan 2003 
+  14                 	;==========================================-=
+  15                 	
+  16                 	;----------------------------------------
+  17                 	;            Text Section (code and data)
+  18                 	;----------------------------------------
+  19                 	.global _start
+  20                 	.sect .text
+  21                 	
+  22                 	_start: 
+  23 0000 8E 00 00    	          lds #_stack    ; initialize SP
+  24 0003 B6 00 00    	          ldaa AA        ; load AA
+  25 0006 F6 00 00    	          ldab BB        ; load BB
+  26 0009 BD 00 00    	          jsr swapab     ; call swapab
+  27 000c B7 00 00    	          staa AA        ; save AA
+  28 000f F7 00 00    	          stab BB        ; save BB
+  29 0012 3F          	          swi          
+  30                 	
+  31                 	;---------------------------------------------
+  32                 	; Behaviour:
+  33                 	;      Swap the contents of acca and accb
+  34                 	; Assumptions:
+  35                 	;      none
+  36                 	; Register and Memory Usage:
+  37                 	;    Precondition:
+  38                 	;      acca and accb are input parameters
+  39                 	;    Postcondition:
+  40                 	;         acca and accb output parameters
+  41                 	;    Destroyes:
+  42                 	;         none
+  43                 	;---------------------------------------------
+  44 0013 36          	swapab:   psha
+  45 0014 37          	          pshb
+  46 0015 32          	          pula
+  47 0016 33          	          pulb
+  48 0017 39          	xswapab:  rts
+  49                 	
+  50                 	;----------------------------------------------
+  51                 	;            Data (in the text section)
+  52                 	;----------------------------------------------
+  53                 	
+  54 0018 03          	AA: .byte 3
+  55 0019 04          	BB: .byte 4
+  56                 	
+  57                 	.end
+M68HC11 GAS  swap.s 			page 2
+
+

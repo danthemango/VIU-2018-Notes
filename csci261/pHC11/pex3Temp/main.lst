@@ -1,0 +1,64 @@
+M68HC11 GAS  main.s 			page 1
+
+
+   1                 	;;;-----------------------------------------
+   2                 	;;; Start MC68HC11 gcc assembly output
+   3                 	;;; gcc compiler 3.0.4 m68hc1x-20030430
+   4                 	;;; Command:	/usr/lib/gcc-lib/m6811-elf/3.0.4/cc1 -lang-c -D__GNUC__=3 -D__GNUC_MINOR__=0 -D__GNUC_
+   5                 	;;; Compiled:	Fri Mar 26 14:40:01 2004
+   6                 	;;; (META)compiled by GNU C version 2.96 20000731 (Mandrake Linux 8.2 2.96-0.76mdk).
+   7                 	;;;-----------------------------------------
+   8                 		.file	"main.c"
+   9                 		.mode mshort
+  10                 		.mode mlong-double
+  11                 		; extern	wstr
+  12                 		; extern	strStr
+  13                 		; extern	wcrlf
+  14                 		.sect	.text
+  15                 		.globl	_start
+  16                 		.type	_start,@function
+  17                 	_start:
+  18                 	; Begin inline assembler code
+  19                 	#APP
+  20 0000 8E 00 00    		lds #_stack
+  21                 	; End of inline assembler code
+  22                 	#NO_APP
+  23 0003 CC 00 00    		ldd	#strStr
+  24 0006 BD 00 00    		bsr	wstr
+  25 0009 BD 00 00    		bsr	wcrlf
+  26                 	; Begin inline assembler code
+  27                 	#APP
+  28 000c 3F          		swi
+  29                 	; End of inline assembler code
+  30                 	#NO_APP
+  31 000d 39          		rts
+  32                 	.Lfe1:
+  33                 		.size	_start,.Lfe1-_start
+  34                 	; Begin inline assembler code
+  35                 	#APP
+  36 000e 57 72 69 74 		strStr: .ascii "Write a string" 
+  36      65 20 61 20 
+  36      73 74 72 69 
+  36      6E 67 
+  37 001c 04          	 .byte 0x4 
+  38                 	
+  39                 		.ident	"GCC: (GNU) 3.0.4 m68hc1x-20030430"
+M68HC11 GAS  main.s 			page 2
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+              main.s:0      .text:0000000000000000 L0F0
+              main.s:17     .text:0000000000000000 _start
+              main.s:20     .text:0000000000000000 L0L0
+              main.s:23     .text:0000000000000003 L0L1
+              main.s:36     .text:000000000000000e strStr
+              main.s:24     .text:0000000000000006 L0L2
+              main.s:25     .text:0000000000000009 L0L3
+              main.s:28     .text:000000000000000c L0L4
+              main.s:31     .text:000000000000000d L0L5
+
+UNDEFINED SYMBOLS
+_stack
+wstr
+wcrlf

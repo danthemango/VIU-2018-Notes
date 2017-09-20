@@ -1,0 +1,70 @@
+M68HC11 GAS  main.s 			page 1
+
+
+   1                 	;;;-----------------------------------------
+   2                 	;;; Start MC68HC11 gcc assembly output
+   3                 	;;; gcc compiler 3.0.4 m68hc1x-20021111
+   4                 	;;; Command:	/usr/lib/gcc-lib/m6811-elf/3.0.4/cc1 -lang-c -D__GNUC__=3 -D__GNUC_MINOR__=0 -D__GNUC_
+   5                 	;;; Compiled:	Thu Mar 20 14:01:50 2003
+   6                 	;;; (META)compiled by GNU C version 2.96 20000731 (Mandrake Linux 8.2 2.96-0.76mdk).
+   7                 	;;;-----------------------------------------
+   8                 		.file	"main.c"
+   9                 		.mode mshort
+  10                 		.mode mlong-double
+  11                 		; extern	foo
+  12                 		.sect	.text
+  13                 		.globl	_start
+  14                 		.type	_start,@function
+  15                 	_start:
+  16 0000 C6 03       		ldab	#3
+  17 0002 37          		pshb
+  18 0003 34          		des
+  19 0004 C6 02       		ldab	#2
+  20 0006 37          		pshb
+  21 0007 34          		des
+  22 0008 C6 01       		ldab	#1
+  23 000a 8D 06       		bsr	foo
+  24 000c 4F          		clra
+  25 000d 18 38       		puly
+  26 000f 18 38       		puly
+  27 0011 39          		rts
+  28                 	.Lfe1:
+  29                 		.size	_start,.Lfe1-_start
+  30                 		.globl	foo
+  31                 		.type	foo,@function
+  32                 	foo:
+  33 0012 30          		tsx
+  34 0013 EB 03       		addb	3,x
+  35 0015 E0 05       		subb	5,x
+  36 0017 4F          		clra
+  37 0018 39          		rts
+  38                 	.Lfe2:
+  39                 		.size	foo,.Lfe2-foo
+  40                 		.ident	"GCC: (GNU) 3.0.4 m68hc1x-20021111"
+M68HC11 GAS  main.s 			page 2
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+              main.s:0      .text:0000000000000000 L0F0
+              main.s:15     .text:0000000000000000 _start
+              main.s:16     .text:0000000000000000 L0L0
+              main.s:17     .text:0000000000000002 L0L1
+              main.s:18     .text:0000000000000003 L0L2
+              main.s:19     .text:0000000000000004 L0L3
+              main.s:20     .text:0000000000000006 L0L4
+              main.s:21     .text:0000000000000007 L0L5
+              main.s:22     .text:0000000000000008 L0L6
+              main.s:23     .text:000000000000000a L0L7
+              main.s:32     .text:0000000000000012 foo
+              main.s:24     .text:000000000000000c L0L8
+              main.s:25     .text:000000000000000d L0L9
+              main.s:26     .text:000000000000000f L0L10
+              main.s:27     .text:0000000000000011 L0L11
+              main.s:33     .text:0000000000000012 L0L12
+              main.s:34     .text:0000000000000013 L0L13
+              main.s:35     .text:0000000000000015 L0L14
+              main.s:36     .text:0000000000000017 L0L15
+              main.s:37     .text:0000000000000018 L0L16
+
+NO UNDEFINED SYMBOLS

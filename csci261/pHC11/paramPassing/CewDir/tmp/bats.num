@@ -1,0 +1,38 @@
+include(CewDir/bin/cew.gdb)
+# Cew for asm Testing Script
+# Peter Walsh Mar 2002
+
+#------------ gdb/cew Initialization ---------------
+   #set remotebaud 9600
+   #target buffalo /dev/ttyS0
+   # NOTE... only tested on the simulator
+   # BY DEFAULT
+   # sp will be initialized to 0x0000
+   # _start will be initialized to 0x2000
+   target sim
+   load main.elf
+   set language asm
+   cew_Variables
+
+#-------------- Local Assumptions -----------------
+# none
+
+#-------------- Local Constants -------------------
+# none
+
+#-------------- Local Functions -------------------
+# none
+
+#---------------- Test Cases -----------------------
+   break _start
+   run
+
+   cew_Ncase( 30 ,
+ , (unsigned char)foo(3,1,2) 
+, 2)
+   cew_Ncase( 31 ,
+ , (unsigned char)foo(2,1,2) 
+, 1)
+
+   cew_Summary
+   quit

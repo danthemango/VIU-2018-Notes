@@ -1,0 +1,85 @@
+00000000 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+00000000 Daniel Guenther
+00000000 CSCI 261 Section 2
+00000000 Task 3
+00000000 2016-02-11
+00000000 
+00000000 Behaviour
+00000000      main passes an address a (big endian) to the subroutine 
+00000000      the parameter is passed on the stack
+00000000      the subroutine implements the following  pseudo code
+00000000         *a=*a+1 (increment the value referenced by a by 1) 
+00000000 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+00000000 
+00000010    pushimm a      ; place a at *a
+00000110
+00000101    popext *a
+11011110
+10101111
+00000010    pushimm R-L    ;push return address 
+00100010
+00000010    pushimm R-H
+00000000         
+00000010    pushimm *a-L   ;push *a
+10101111
+00000010    pushimm *a-H
+11011110
+00000010    pushimm 0      ;go to subroutine
+00000000         
+00000101    popext PSW
+11111111
+11111011
+00000110    jnz S          
+00000000
+00101010         
+00000011 R: pushext *a     ;push a to port A
+11011110
+10101111
+00000101    popext port A
+11111111 
+11111100
+00000001    halt
+00000000 ----------------Subroutine----------------------- 
+00000101 S: popext W      ;boilerplate: set *a and R. *a-H
+00000000
+01000100
+00000011    pushext W
+00000000 
+01000100
+00000101    popext X
+00000000
+01001010
+00000101    popext W+1    ;*a-L
+00000000
+01000101 
+00000011    pushext W+1
+00000000
+01000101 
+00000101    popext X+1
+00000000
+01001011 
+00000101    popext Z       ;R-H
+00000000
+01010010
+00000101    popext Z+1     ;R-L
+00000000
+01010011
+00000000                   ;end of boilerplate
+00000011    pushext *a     ;get a
+00000000 W:
+00000000 
+00000010    pushimm 1      ;increment it
+00000001         
+00000111    add
+00000101    popext *a      ;push to *a
+00000000 X:
+00000000 
+00000010    pushimm 0      ;go to R
+00000000
+00000101    popext PSW
+11111111
+11111011
+00000110    jnz R
+00000000 Z:
+00000000    
+00000000 --------------end of subroutine------------------

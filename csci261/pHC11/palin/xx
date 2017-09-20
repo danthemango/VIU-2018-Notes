@@ -1,0 +1,159 @@
+include(CewDir/bin/cew.gdb)
+# Cew for asm Testing Script
+# Peter Walsh Mar 2002
+
+#------------ gdb/cew Initialization ---------------
+   #set remotebaud 9600
+   #target buffalo /dev/ttyS0
+   target sim
+   load palin.elf
+   set language asm
+   cew_Variables
+
+#-------------- Local Assumptions -----------------
+#   main.s has a malloc() routine that always returns the
+#   address of STR
+
+#-------------- Local Constants -------------------
+#   Max string size is 30 bytes including null terminator
+
+#-------------- Local Functions -------------------
+#   none
+
+#---------------- Test Cases -----------------------
+   #test palindrome
+   tbreak *isPal
+   tbreak *xisPal
+   run
+   set $xin=$x
+   set $yin=$y
+   set $spin=$sp
+   set $testString="Happy St Patricks day"
+   cew_Ncase(continue, $d, 0)
+   cew_Ncase(, $x , $xin)
+   cew_Ncase(, $y , $yin)
+   cew_Ncase(, $sp , $spin)
+
+   tbreak *isPal
+   tbreak *xisPal
+   run
+   set $xin=$x
+   set $yin=$y
+   set $spin=$sp
+   set $testString="1"
+   cew_Ncase(continue, $d, 1)
+   cew_Ncase(, $x , $xin)
+   cew_Ncase(, $y , $yin)
+   cew_Ncase(, $sp , $spin)
+
+   tbreak *isPal
+   tbreak *xisPal
+   run
+   set $xin=$x
+   set $yin=$y
+   set $spin=$sp
+   set $testString="11"
+   cew_Ncase(continue, $d, 1)
+   cew_Ncase(, $x , $xin)
+   cew_Ncase(, $y , $yin)
+   cew_Ncase(, $sp , $spin)
+
+   tbreak *isPal
+   tbreak *xisPal
+   run
+   set $xin=$x
+   set $yin=$y
+   set $spin=$sp
+   set $testString="10"
+   cew_Ncase(continue, $d, 0)
+   cew_Ncase(, $x , $xin)
+   cew_Ncase(, $y , $yin)
+   cew_Ncase(, $sp , $spin)
+   
+   tbreak *isPal
+   tbreak *xisPal
+   run
+   set $xin=$x
+   set $yin=$y
+   set $spin=$sp
+   set $testString="101"
+   cew_Ncase(continue, $d, 1)
+   cew_Ncase(, $x , $xin)
+   cew_Ncase(, $y , $yin)
+   cew_Ncase(, $sp , $spin)
+
+   tbreak *isPal
+   tbreak *xisPal
+   run
+   set $xin=$x
+   set $yin=$y
+   set $spin=$sp
+   set $testString="112"
+   cew_Ncase(continue, $d, 0)
+   cew_Ncase(, $x , $xin)
+   cew_Ncase(, $y , $yin)
+   cew_Ncase(, $sp , $spin)
+
+   tbreak *isPal
+   tbreak *xisPal
+   run
+   set $xin=$x
+   set $yin=$y
+   set $spin=$sp
+   set $testString="1221"
+   cew_Ncase(continue, $d, 1)
+   cew_Ncase(, $x , $xin)
+   cew_Ncase(, $y , $yin)
+   cew_Ncase(, $sp , $spin)
+
+   tbreak *isPal
+   tbreak *xisPal
+   run
+   set $xin=$x
+   set $yin=$y
+   set $spin=$sp
+   set $testString="1211"
+   cew_Ncase(continue, $d, 0)
+   cew_Ncase(, $x , $xin)
+   cew_Ncase(, $y , $yin)
+   cew_Ncase(, $sp , $spin)
+   
+   tbreak *isPal
+   tbreak *xisPal
+   run
+   set $xin=$x
+   set $yin=$y
+   set $spin=$sp
+   set $testString="ratsliveonnoevilstar"
+   cew_Ncase(continue, $d, 1)
+   cew_Ncase(, $x , $xin)
+   cew_Ncase(, $y , $yin)
+   cew_Ncase(, $sp , $spin)
+
+   tbreak *isPal
+   tbreak *xisPal
+   run
+   set $xin=$x
+   set $yin=$y
+   set $spin=$sp
+   set $testString="ratslieonnoevilstar"
+   cew_Ncase(continue, $d, 1)
+   cew_Ncase(, $x , $xin)
+   cew_Ncase(, $y , $xin)
+   cew_Ncase(, $sp , $spin)
+
+   tbreak *isPal
+   tbreak *xisPal
+   run
+   set $xin=$x
+   set $yin=$y
+   set $spin=$sp
+   set $testString="ratslieonnoeilstar"
+   cew_Ncase(continue, $d, 1)
+   cew_Ncase(, $x , $xin)
+   cew_Ncase(, $y , $yin)
+   cew_Ncase(, $sp , $spin)
+   
+   
+   cew_Summary
+   quit

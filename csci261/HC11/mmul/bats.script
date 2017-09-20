@@ -1,0 +1,134 @@
+include(CewDir/bin/cew.gdb)
+# Cew for asm Testing Script
+# Peter Walsh Feb 2001
+
+#------------ gdb/cew Initialization -------------
+   #set remotebaud 9600
+   #target buffalo /dev/ttyS0
+   target sim
+   load mmul.elf
+   set language asm
+   cew_Variables
+
+#-------------- Local Assumptions ----------------
+#   none
+
+#-------------- Local Constants ------------------
+#   hard coded
+
+#-------------- Local Functions ------------------
+# Behaviour:
+#   $ansIsPrime = prime($arg0) 
+# Assumptions:
+#    $arg0 > 0
+#    true = 1 and false = 0
+define isPoracle
+   set $ansIsPrime=0
+   set $aa=$arg0
+   if ($aa == 2)
+      set $ansIsPrime=1
+   end
+   if ($aa >= 3)
+      set $divisor=2
+      while ($aa % $divisor)
+         set $divisor++
+      end
+      if ($aa==$divisor)
+         set $ansIsPrime=1
+      end
+   end
+end
+
+# Behaviour:
+#   $ansCountPrimes = number of primes between 0 and $arg0 inclusive 
+# Assumptions:
+#    $arg0 > 0
+define countPoracle
+   set $ansCountPrimes=0
+   set $ii=0
+   set $jj=$arg0
+   while ($ii <= $jj)
+      isPoracle $ii
+      if ($ansIsPrime==1)
+         set $ansCountPrimes++
+      end
+      set $ii++
+   end
+end 
+
+#---------------- Test Cases -----------------------
+   # isPrime
+   set $cnt=0
+   while ($cnt < 500)
+      tbreak *isPrime
+      tbreak *xisPrime
+      run
+      set $xin=$x
+      set $yin=$y
+      set $spin=$sp
+      set $d=$cnt
+      isPoracle $cnt
+      cew_Ncase(continue, $d, $ansIsPrime)
+      cew_Ncase(, $x , $xin)
+      cew_Ncase(, $y , $yin)
+      cew_Ncase(, $sp , $spin)
+      set $cnt++
+   end
+
+   # countPrimes
+   set $cnt=0
+   while ($cnt < 100)
+      tbreak *countPrimes
+      tbreak *xcountPrimes
+      run
+      set $xin=$x
+      set $yin=$y
+      set $spin=$sp
+      set $d=$cnt
+      countPoracle $cnt
+      cew_Ncase(continue, $d, $ansCountPrimes)
+      cew_Ncase(, $x , $xin)
+      cew_Ncase(, $y , $yin)
+      cew_Ncase(, $sp , $spin)
+      set $cnt++
+   end
+
+   set $cnt=500
+   while ($cnt < 502)
+      tbreak *countPrimes
+      tbreak *xcountPrimes
+      run
+      set $xin=$x
+      set $yin=$y
+      set $spin=$sp
+      set $d=$cnt
+      countPoracle $cnt
+      cew_Ncase(continue, $d, $ansCountPrimes)
+      cew_Ncase(, $x , $xin)
+      cew_Ncase(, $y , $yin)
+      cew_Ncase(, $sp , $spin)
+      set $cnt++
+   end
+
+   # main
+   set $cnt=0
+   while ($cnt < 100)
+      tbreak *_start
+      run
+      set {short int}&N=$cnt
+      countPoracle $cnt
+      cew_Ncase(continue, {unsigned char}&COUNT, $ansCountPrimes)
+      set $cnt++
+   end
+
+   set $cnt=500
+   while ($cnt < 501)
+      tbreak *_start
+      run
+      set {short int}&N=$cnt
+      countPoracle $cnt
+      cew_Ncase(continue, {unsigned char}&COUNT, $ansCountPrimes)
+      set $cnt++
+
+   cew_Summary
+   quit

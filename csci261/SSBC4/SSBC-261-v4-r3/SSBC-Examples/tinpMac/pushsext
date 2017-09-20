@@ -1,0 +1,10 @@
+00000010 pushimm L(B)
+11111101 
+00000010 pushimm H(B)
+11111111 
+00001011 pushsext
+00000101 pushext A
+11111111
+11111100
+00000001 halt
+00000000 A should have value at B

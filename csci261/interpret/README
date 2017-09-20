@@ -1,0 +1,11 @@
+================================================
+= Filename: README
+= Author: Daniel Guenther (565154853)
+= Date: 2016-01-21
+= Class: CSCI261
+= 
+= Purpose: To explain the interpreter
+================================================
+
+The interpreter is a perl file which can transform SSBC assembly language to machine code
+

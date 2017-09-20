@@ -1,0 +1,99 @@
+M68HC11 GAS  fibonacci.s 			page 1
+
+
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "fibonacci.s" 
+   4                 	; Behaviour: 
+   5                 	;      Calculate the Nth fibonacci number
+   6                 	;      and store the answer in FIBON
+   7                 	; Assumptions:
+   8                 	;      - N is in the range [0, MAXN] 
+   9                 	; Board:
+  10                 	;      CME11-E9-EVBU
+  11                 	; Author/Date:
+  12                 	;      Peter Walsh Feb 2001
+  13                 	;      revised Feb 2002
+  14                 	;============================================-=
+  15                 	
+  16                 	;----------------------------------------------
+  17                 	;            Text Section (code and data)
+  18                 	;----------------------------------------------
+  19                 	.sect .text
+  20                 	.global _start
+  21                 	
+  22                 	_start: 
+  23 0000 8E 00 00    	         lds #_stack    ; initialize SP
+  24 0003 F6 00 00    	         ldab N        
+  25 0006 BD 00 00    	         jsr fibonacci   
+  26 0009 B7 00 00    	         staa FIBON
+  27                 		 ;stop           ; use stop for wookie
+  28 000c 3F          	         swi            ; use swi for gdb and buffalo
+  29                 	
+  30                 	;---------------------------------------------
+  31                 	; Behaviour: 
+  32                 	;      Return the nth fibonacci number
+  33                 	; Assumptions:
+  34                 	;      n th fibonacci number is fib(n) = fib(n-1) + fib(n-2) where
+  35                 	;      fib(0) and fib(1) = 1 (n >= 0)
+  36                 	; Register and Memory Usage:
+  37                 	;    Precondition:
+  38                 	;      accb contains the  value of n 
+  39                 	;    Postcondition:
+  40                 	;      acca contain  fib(n)
+  41                 	;    Destroyed:
+  42                 	;      ccr
+  43                 	;---------------------------------------------
+  44 000d 37          	fibonacci: pshb         ; save registers 
+  45 000e 3C          	           pshx
+  46                 	
+  47                 	                        ; set up variables on the stack
+  48 000f 86 01       	           ldaa #1      
+  49 0011 36          	           psha         ; fn-1
+  50 0012 36          	           psha         ; fn
+  51                 	
+  52 0013 30          	           tsx          ; set up index ($x)to access variables
+  53                 	
+  54 0014 5D          	           tstb         ; done if n==0 or n==1
+  55 0015 27 12       	           beq donefib
+  56 0017 5A          	           decb
+  57 0018 27 0F       	           beq donefib
+M68HC11 GAS  fibonacci.s 			page 2
+
+
+  58                 	
+  59                 	                        ; calculate fib(n) where n>1
+  60                 	
+  61 001a 37          	L1:        pshb         ; save n
+  62 001b A6 00       	           ldaa 0,x     ; $a=fn
+  63 001d E6 00       	           ldab 0,x     ; $b=fn
+  64                 	
+  65 001f AB 01       	           adda 1,x     ; $a=$a+fn-1
+  66 0021 A7 00       	           staa 0,x     ; fn=$a
+  67                 	
+  68 0023 E7 01       	           stab 1,x     ; fn-1=$b  
+  69                 	
+  70 0025 33          	           pulb         ; loop until n==0
+  71 0026 5A          	           decb
+  72 0027 26 F1       	           bne L1
+  73                 	
+  74 0029 32          	donefib:   pula         ; $a=fn
+  75                 	
+  76 002a 31          	           ins          ; clean the stack and restore register values
+  77 002b 38          	           pulx
+  78 002c 33          	           pulb
+  79                 	
+  80 002d 39          	xfibonacci:rts
+  81                 	
+  82                 	;----------------------------------------------
+  83                 	;            Data Section
+  84                 	;----------------------------------------------
+  85                 	N: .byte 
+  86                 	FIBON: .byte
+  87                 	
+  88                 	#set up dummy frame pointer
+  89                 	.global _.frame
+  90                 	_.frame: .word
+  91                 	
+  92                 	
+  93                 	.end

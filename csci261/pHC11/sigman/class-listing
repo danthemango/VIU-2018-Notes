@@ -1,0 +1,83 @@
+>>>>>>>>>>> File: bats.script
+
+include(CewDir/bin/cew.gdb)
+# Cew for asm Testing Script
+# Peter Walsh Feb 2001
+
+#------------ gdb/cew Initialization ---------------
+   #set remotebaud 9600
+   #target buffalo /dev/ttyS0
+   target sim
+   load sigman.elf
+   set language asm
+   cew_Variables
+
+#-------------- Local Assumptions ------------------
+#  none
+
+#-------------- Local Constants --------------------
+#  none
+
+#-------------- Local Functions --------------------
+#  none
+
+#---------------- Test Cases -----------------------
+   cew_Ncase(run,  {unsigned char}&SUM , 0xa) 
+   # changing memory as demonstrated below is not recommended
+   # it is included here just to show the 'power' of gdb's scripting lang.
+   cew_Ncase(set {unsigned char}0x2002=3; run,  {unsigned char}&SUM , 0x6)
+   cew_Ncase(set {unsigned char}0x2002=4; run,  {unsigned char}&SUM , 0xa)
+   cew_Ncase(set {unsigned char}0x2002=1; run,  {unsigned char}&SUM , 0x1)
+
+   cew_Summary
+   quit
+
+>>>>>>>>>>> File: sigman.lst
+
+M68HC11 GAS  sigman.s 			page 1
+
+
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "sigman.s" 
+   4                 	; Behaviour: 
+   5                 	;      Calculate sigma N and store the
+   6                 	;      result in SUM
+   7                 	; Assumptions:
+   8                 	;      N is a program constant > 0
+   9                 	; Board:
+  10                 	;      CME11-E9-EVBU 
+  11                 	; Author/Date:
+  12                 	;      Peter Walsh Feb 2001
+  13                 	;      revised Feb 2002
+  14                 	;============================================-=
+  15                 	
+  16                 	;----------------------------------------------
+  17                 	;            Text Section (code and data)
+  18                 	;----------------------------------------------
+  19                 	.sect .text
+  20                 	.global _start
+  21                 	
+  22                 	_start: 
+  23 0000 4F          	      clra           ; clear acca
+  24 0001 C6 04       	      ldab #N        ; load accb with the value of N
+  25                 	loop:
+  26 0003 1B          	      aba            ; acca:= acca + accb
+  27 0004 5A          	      decb           ; decrement accb
+  28 0005 26 FC       	      bne loop       ; if accb != 0 then goto loop
+  29 0007 B7 00 00    	      staa SUM       ; store acca in memory referenced by SUM 
+  30 000a CF          	      stop
+  31                 	
+  32                 	;----------------------------------------------
+  33                 	;            Data Section
+  34                 	;----------------------------------------------
+  35                 	set N, 4
+  36 000b 00          	SUM: .byte 0
+  37                 	
+  38                 	.end
+
+>>>>>>>>>>> File: sigman.s19
+
+S00D00007369676D616E2E73313968
+S10F20004FC6041B5A26FCB7200BCF006F
+S9032000DC

@@ -1,0 +1,6 @@
+gen.pl generates Makefiles for all the listed modules with the exception
+of the main Makefile and the Exc Makefile.  Warning, it overwrites
+existing makefiles. Also, note that when tb.cew does not exist in a
+directory, the template tb.cew is copied from Cew/Template. This tb.cew
+is only a stub and has no test cases and no errors :)
+

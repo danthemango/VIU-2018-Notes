@@ -1,0 +1,20 @@
+M68HC11 GAS  foolib.s 			page 1
+
+
+   1                 	.global foo
+   2                 	
+   3                 	foo:
+   4 0000 5C          	        incb
+   5 0001 4F          	        clra
+   6 0002 39          	        rts
+M68HC11 GAS  foolib.s 			page 2
+
+
+DEFINED SYMBOLS
+            foolib.s:0      .text:0000000000000000 L0F0
+            foolib.s:3      .text:0000000000000000 foo
+            foolib.s:4      .text:0000000000000000 L0L0
+            foolib.s:5      .text:0000000000000001 L0L1
+            foolib.s:6      .text:0000000000000002 L0L2
+
+NO UNDEFINED SYMBOLS

@@ -1,0 +1,43 @@
+M68HC11 GAS  foolib.s 			page 1
+
+
+   1                 	;======================
+   2                 	; Buff routine stubs
+   3                 	;======================
+   4                 	
+   5                 	set OUTSTRGO, 0xffca
+   6                 	set OUTCRLF, 0xffc4
+   7                 	
+   8                 	.global wstr
+   9                 	.global wcrlf
+  10                 	
+  11 0000 BD FF C4    	wcrlf:  jsr OUTCRLF
+  12 0003 39          	        rts
+  13                 	
+  14 0004 8F          	wstr:   xgdx
+  15 0005 BD FF CA    	        jsr OUTSTRGO   
+  16 0008 39          	        rts
+  17                 	
+  18                 	;===================
+  19                 	; soft registers
+  20                 	;===================
+  21                 	.sect softregs
+  22                 	.global _.d1
+  23                 	_.d1: .word
+M68HC11 GAS  foolib.s 			page 2
+
+
+DEFINED SYMBOLS
+            foolib.s:0      .text:0000000000000000 L0F0
+            foolib.s:5      *ABS*:000000000000ffca OUTSTRGO
+            foolib.s:6      *ABS*:000000000000ffc4 OUTCRLF
+            foolib.s:14     .text:0000000000000004 wstr
+            foolib.s:11     .text:0000000000000000 wcrlf
+            foolib.s:11     .text:0000000000000000 L0L0
+            foolib.s:12     .text:0000000000000003 L0L1
+            foolib.s:14     .text:0000000000000004 L0L2
+            foolib.s:15     .text:0000000000000005 L0L3
+            foolib.s:16     .text:0000000000000008 L0L4
+            foolib.s:23     softregs:0000000000000000 _.d1
+
+NO UNDEFINED SYMBOLS

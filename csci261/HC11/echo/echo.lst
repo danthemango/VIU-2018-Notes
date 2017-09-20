@@ -1,0 +1,154 @@
+M68HC11 GAS  echo.s 			page 1
+
+
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "echo.s" 
+   4                 	; Behaviour: 
+   5                 	;      Echo a character through the SCI
+   6                 	; Assumptions:
+   7                 	;      Run on simulator or on Axiom board
+   8                 	;      with minicom set with correct comm. parameters	
+   9                 	; Board:
+  10                 	;      CME11-E9-EVBU
+  11                 	; Author:
+  12                 	;      Peter Walsh
+  13                 	;      Mar 2005
+  14                 	;============================================-=
+  15                 	
+  16                 	set RBASE, 0x1000
+  17                 	set BAUD, 0x2b
+  18                 	set SCCR1, 0x2c
+  19                 	set SCCR2, 0x2d
+  20                 	set SCSR, 0x2e
+  21                 	set SCDR, 0x2f
+  22                 	
+  23                 	;----------------------------------------------
+  24                 	;            Text Section (code and data)
+  25                 	;----------------------------------------------
+  26                 	.sect .text
+  27                 	.global _start
+  28                 	
+  29 0000 8E 00 00    	_start:  lds #_stack
+  30 0003 BD 00 00    	         jsr serialInit
+  31 0006 BD 00 00    	again:   jsr serialRecieve
+  32 0009 BD 00 00    	         jsr serialSend 
+  33 000c 20 F8       	         bra again
+  34 000e 39          	         rts
+  35                 	
+  36                 	;---------------------------------------------
+  37                 	; Behaviour: 
+  38                 	;    Initialize SCI
+  39                 	;       - 1200 baud
+  40                 	;       - 1 start bit, 8 data bits 1 stop bit
+  41                 	;	- no parity
+  42                 	; Assumptions:
+  43                 	;       none
+  44                 	; Register and Memory Usage:
+  45                 	;    Precondition:
+  46                 	;    Postcondition:
+  47                 	;    Destroyed:
+  48                 	;       ccr
+  49                 	;---------------------------------------------
+  50 000f 36          	serialInit:   psha 
+  51 0010 86 33       	              ldaa #0x33
+  52 0012 B7 10 2B    	              staa RBASE+BAUD 
+  53 0015 86 00       	              ldaa #0x0
+  54 0017 B7 10 2C    	              staa RBASE+SCCR1
+  55 001a 86 0C       	              ldaa #0xc
+  56 001c B7 10 2D    	              staa RBASE+SCCR2
+  57 001f 32          	              pula
+M68HC11 GAS  echo.s 			page 2
+
+
+  58 0020 39          	xserialInit:  rts
+  59                 	
+  60                 	;---------------------------------------------
+  61                 	; Behaviour: 
+  62                 	;    Send an ASCII character through SCI
+  63                 	; Assumptions:
+  64                 	; Register and Memory Usage:
+  65                 	;    Precondition:
+  66                 	;       reg b contains character to be sent 
+  67                 	;    Postcondition:
+  68                 	;    Destroyed:
+  69                 	;       ccr
+  70                 	;---------------------------------------------
+  71 0021 36          	serialSend:   psha
+  72 0022 B6 10 2E    	serialSend1:  ldaa RBASE+SCSR
+  73 0025 2C FB       	              bge serialSend1
+  74 0027 F7 10 2F    	              stab RBASE+SCDR
+  75 002a 32          	              pula
+  76 002b 39          	xserialSend:  rts
+  77                 	
+  78                 	;---------------------------------------------
+  79                 	; Behaviour: 
+  80                 	;    Recieve an ASCII character through SCI
+  81                 	; Assumptions:
+  82                 	;    none
+  83                 	; Register and Memory Usage:
+  84                 	;    Precondition:
+  85                 	;       none
+  86                 	;    Postcondition:
+  87                 	;       returned character in reg low byte of d
+  88                 	;    Destroyed:
+  89                 	;       ccr
+  90                 	;---------------------------------------------
+  91                 	serialRecieve: 
+  92 002c B6 10 2E    	               ldaa RBASE+SCSR
+  93 002f 85 20       	               bita #0x20
+  94 0031 27 F9       	               beq serialRecieve
+  95 0033 F6 10 2F    	               ldab RBASE+SCDR
+  96 0036 39          	xserialReceive:rts
+  97                 	
+  98                 	.end
+M68HC11 GAS  echo.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 echo.s
+              echo.s:0      .text:0000000000000000 L0F0
+              echo.s:16     *ABS*:0000000000001000 RBASE
+              echo.s:17     *ABS*:000000000000002b BAUD
+              echo.s:18     *ABS*:000000000000002c SCCR1
+              echo.s:19     *ABS*:000000000000002d SCCR2
+              echo.s:20     *ABS*:000000000000002e SCSR
+              echo.s:21     *ABS*:000000000000002f SCDR
+              echo.s:29     .text:0000000000000000 _start
+              echo.s:29     .text:0000000000000000 L0L0
+              echo.s:30     .text:0000000000000003 L0L1
+              echo.s:50     .text:000000000000000f serialInit
+              echo.s:31     .text:0000000000000006 again
+              echo.s:31     .text:0000000000000006 L0L2
+              echo.s:91     .text:000000000000002c serialRecieve
+              echo.s:32     .text:0000000000000009 L0L3
+              echo.s:71     .text:0000000000000021 serialSend
+              echo.s:33     .text:000000000000000c L0L4
+              echo.s:34     .text:000000000000000e L0L5
+              echo.s:50     .text:000000000000000f L0L6
+              echo.s:51     .text:0000000000000010 L0L7
+              echo.s:52     .text:0000000000000012 L0L8
+              echo.s:53     .text:0000000000000015 L0L9
+              echo.s:54     .text:0000000000000017 L0L10
+              echo.s:55     .text:000000000000001a L0L11
+              echo.s:56     .text:000000000000001c L0L12
+              echo.s:57     .text:000000000000001f L0L13
+              echo.s:58     .text:0000000000000020 xserialInit
+              echo.s:58     .text:0000000000000020 L0L14
+              echo.s:71     .text:0000000000000021 L0L15
+              echo.s:72     .text:0000000000000022 serialSend1
+              echo.s:72     .text:0000000000000022 L0L16
+              echo.s:73     .text:0000000000000025 L0L17
+              echo.s:74     .text:0000000000000027 L0L18
+              echo.s:75     .text:000000000000002a L0L19
+              echo.s:76     .text:000000000000002b xserialSend
+              echo.s:76     .text:000000000000002b L0L20
+              echo.s:92     .text:000000000000002c L0L21
+              echo.s:93     .text:000000000000002f L0L22
+              echo.s:94     .text:0000000000000031 L0L23
+              echo.s:95     .text:0000000000000033 L0L24
+              echo.s:96     .text:0000000000000036 xserialReceive
+              echo.s:96     .text:0000000000000036 L0L25
+
+UNDEFINED SYMBOLS
+_stack

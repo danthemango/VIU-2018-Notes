@@ -1,0 +1,58 @@
+include(CewDir/bin/cew.gdb)
+# Cew for asm Testing Script
+# Peter Walsh Feb 2001
+
+#------------ gdb/cew Initialization ---------------
+   #set remotebaud 9600
+   #target buffalo /dev/ttyS0
+   target sim
+   load fibonacci.elf
+   set language asm
+   cew_Variables
+
+#-------------- Local Assumptions -----------------
+#  none
+
+#-------------- Local Constants -------------------
+   set $MAXN=0xC
+
+#-------------- Local Functions -------------------
+# Behaviour:
+#   $ans = fib($arg0) 
+# Assumptions:
+#    $arg0 >= 0
+define oracle
+   set $fn=1
+   set $fnm1=1
+   set $i=$arg0
+   while ($i >= 2)
+      set $hld=$fn
+      set $fn=$fn + $fnm1
+      set $fnm1=$hld
+      set $i--
+   end
+   set $ans=$fn
+end
+
+#---------------- Test Cases -----------------------
+   set $cnt=0
+   while ($cnt <= $MAXN)
+      cew_Ncase(set {unsigned char}&N=$cnt; run; oracle $cnt,  {unsigned char}&FIBON, $ans) 
+
+      set {unsigned char}&N=$cnt
+      tbreak *fibonacci
+      tbreak *xfibonacci
+      cew_Ncase(run, $b, $cnt) 
+      set $xin=$x
+      set $yin=$y
+      set $spin=$sp
+      cew_Ncase(continue, $a, $ans) 
+      cew_Ncase(, $b, $cnt) 
+      cew_Ncase(, $x, $xin) 
+      cew_Ncase(, $y, $yin) 
+      cew_Ncase(, $sp, $spin) 
+      set $cnt++
+      end
+
+   cew_Summary
+   quit

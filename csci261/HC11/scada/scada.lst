@@ -1,0 +1,124 @@
+M68HC11 GAS  scada.s 			page 1
+
+
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "scada.s" 
+   4                 	; Behaviour: 
+   5                 	;      reads input from serial port
+   6                 	;      if '0' then write 0x00 to port A and echo '0' back on serial line 
+   7                 	;      else if '1' write 0xFF to port A and echo '1' back on serial line
+   8                 	;      else if '2' re-enter BUFFALO monitor
+   9                 	
+  10                 	; Assumptions:
+  11                 	;      none
+  12                 	; Destroys:
+  13                 	;      a, x
+  14                 	; Board:
+  15                 	;      CME11-E9-EVBU
+  16                 	; Author:
+  17                 	;      Peter Walsh
+  18                 	;============================================-=
+  19                 	
+  20                 	set RBASE, 0x1000
+  21                 	
+  22                 	set PORTA, 0x0
+  23                 	set ONLED, 0xff
+  24                 	set OFFLED, 0x0
+  25                 	set INCHAR, 0xffcd
+  26                 	set OUTA, 0xffb8
+  27                 	set CRLF, 0xffc4
+  28                 	
+  29                 	
+  30                 	;----------------------------------------------
+  31                 	;            Text Section (code and data)
+  32                 	;----------------------------------------------
+  33                 	.sect .text
+  34                 	.global _start
+  35                 	
+  36 0000 8E 00 00    	_start:  lds #_stack
+  37                 	
+  38 0003 CE 10 00    	         ldx #RBASE
+  39 0006 86 00       	         ldaa #OFFLED
+  40 0008 A7 00       	         staa PORTA,x
+  41                 	
+  42 000a BD FF CD    	again:   jsr INCHAR
+  43                 	
+  44 000d 81 30       	         cmpa #0x30
+  45 000f 26 09       	         bne notClear
+  46                 	
+  47                 	         #echo '0' and clead led
+  48 0011 BD FF B8    	         jsr OUTA
+  49 0014 86 00       	         ldaa #OFFLED
+  50 0016 A7 00       	         staa PORTA,x
+  51 0018 20 F0       	         bra again
+  52                 	
+  53                 	notClear: 
+  54 001a 81 31       	         cmpa #0x31
+  55 001c 26 09       	         bne notSet
+  56                 	
+  57                 	         #echo '1' and set led
+M68HC11 GAS  scada.s 			page 2
+
+
+  58 001e BD FF B8    	         jsr OUTA
+  59 0021 86 FF       	         ldaa #ONLED
+  60 0023 A7 00       	         staa PORTA,x
+  61 0025 20 E3       	         bra again
+  62                 	notSet: 
+  63 0027 81 32       	         cmpa #0x32
+  64 0029 26 04       	         bne notReset 
+  65                 	
+  66                 	         # reset 
+  67 002b BD FF CD    	         jsr INCHAR ; remove the ENTER from input stream
+  68 002e 3F          	         swi
+  69                 	
+  70                 	notReset: 
+  71                 	         # default
+  72 002f 20 D9       	         bra again
+  73                 	
+  74                 	
+  75                 	.end
+M68HC11 GAS  scada.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 scada.s
+             scada.s:0      .text:0000000000000000 L0F0
+             scada.s:20     *ABS*:0000000000001000 RBASE
+             scada.s:22     *ABS*:0000000000000000 PORTA
+             scada.s:23     *ABS*:00000000000000ff ONLED
+             scada.s:24     *ABS*:0000000000000000 OFFLED
+             scada.s:25     *ABS*:000000000000ffcd INCHAR
+             scada.s:26     *ABS*:000000000000ffb8 OUTA
+             scada.s:27     *ABS*:000000000000ffc4 CRLF
+             scada.s:36     .text:0000000000000000 _start
+             scada.s:36     .text:0000000000000000 L0L0
+             scada.s:38     .text:0000000000000003 L0L1
+             scada.s:39     .text:0000000000000006 L0L2
+             scada.s:40     .text:0000000000000008 L0L3
+             scada.s:42     .text:000000000000000a again
+             scada.s:42     .text:000000000000000a L0L4
+             scada.s:44     .text:000000000000000d L0L5
+             scada.s:45     .text:000000000000000f L0L6
+             scada.s:53     .text:000000000000001a notClear
+             scada.s:48     .text:0000000000000011 L0L7
+             scada.s:49     .text:0000000000000014 L0L8
+             scada.s:50     .text:0000000000000016 L0L9
+             scada.s:51     .text:0000000000000018 L0L10
+             scada.s:54     .text:000000000000001a L0L11
+             scada.s:55     .text:000000000000001c L0L12
+             scada.s:62     .text:0000000000000027 notSet
+             scada.s:58     .text:000000000000001e L0L13
+             scada.s:59     .text:0000000000000021 L0L14
+             scada.s:60     .text:0000000000000023 L0L15
+             scada.s:61     .text:0000000000000025 L0L16
+             scada.s:63     .text:0000000000000027 L0L17
+             scada.s:64     .text:0000000000000029 L0L18
+             scada.s:70     .text:000000000000002f notReset
+             scada.s:67     .text:000000000000002b L0L19
+             scada.s:68     .text:000000000000002e L0L20
+             scada.s:72     .text:000000000000002f L0L21
+
+UNDEFINED SYMBOLS
+_stack

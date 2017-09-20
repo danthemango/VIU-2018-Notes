@@ -1,0 +1,52 @@
+Perl Linked Lists (P Walsh csci 460)
+
+#######################################
+Array Pointers
+#######################################
+
+use constant NEXT    => 1;
+use constant VAL     => 0;
+
+$head=undef;
+
+sub add {
+
+   for ($j=0; $j<10; $j++) {
+      $node=[$j, $head];
+      $head=$node;
+   }
+
+}
+
+add();
+$x=$head;
+while (defined($x))  {
+
+   print( $x->[VAL], "\n");
+   $x=$x->[NEXT];
+
+}
+
+#######################################
+Hash Pointers
+#######################################
+
+$head=undef;
+
+sub add {
+
+   for ($j=0; $j<10; $j++) {
+      $node={val => $j, next => $head};
+      $head=$node;
+   }
+
+}
+
+add();
+$x=$head;
+while (defined($x))  {
+
+   print( $x->{val}, "\n");
+   $x=$x->{next};
+
+}

@@ -1,0 +1,58 @@
+M68HC11 GAS  add2.s 			page 1
+
+
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "add2.s" 
+   4                 	; Behaviour: 
+   5                 	;      Add the contents of AA and BB and store result in CC
+   6                 	; Assumptions:
+   7                 	;      none
+   8                 	; Board:
+   9                 	;      CME11-E9-EVBU
+  10                 	; Author/Date:
+  11                 	;      Peter Walsh Feb 2001
+  12                 	;      revised Feb 2003
+  13                 	;==========================================-=
+  14                 	
+  15                 	;----------------------------------------------
+  16                 	;            Text Section (code and data)
+  17                 	;----------------------------------------------
+  18                 	.sect .text 
+  19                 	.global _start
+  20                 	
+  21                 	_start: 
+  22 0000 8E 00 00    	          lds #_stack    ; initialize SP
+  23 0003 B6 00 00    	          ldaa AA        ; load AA
+  24 0006 F6 00 00    	          ldab BB        ; load BB
+  25 0009 BD 00 00    	          jsr add2       ; call add2
+  26 000c B7 00 00    	          staa CC        ; save CC
+  27                 	          ;stop           ; use stop for wookie
+  28 000f 3F          	          swi            ; use swi for gdb and buffalo
+  29                 	
+  30                 	
+  31                 	;---------------------------------------------
+  32                 	; Behaviour: 
+  33                 	;      Sum the contents of acca and accb
+  34                 	; Assumptions:
+  35                 	;      none
+  36                 	; Register and Memory Usage:
+  37                 	;    Precondition:
+  38                 	;      acca and accb are input parameters
+  39                 	;    Postcondition:
+  40                 	;         acca contains the sum
+  41                 	;    Destroyes:
+  42                 	;         ccr
+  43                 	;---------------------------------------------
+  44 0010 1B          	add2:     aba
+  45 0011 39          	xadd2:    rts
+  46                 	
+  47                 	
+  48                 	;----------------------------------------------
+  49                 	;            Data (in Text section)
+  50                 	;----------------------------------------------
+  51 0012 03          	AA: .byte 3
+  52 0013 04          	BB: .byte 4
+  53 0014 00          	CC: .byte 0
+  54                 	
+  55                 	.end

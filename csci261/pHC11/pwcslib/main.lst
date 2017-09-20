@@ -1,0 +1,95 @@
+M68HC11 GAS  main.s 			page 1
+
+
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "main.s" 
+   4                 	; Behaviour: 
+   5                 	;      main function to test iolib.s
+   6                 	; Assumptions:
+   7                 	;      STR is the address of the start of a string.
+   8                 	;      The string under test can be a maximum of 30 characters including
+   9                 	;      the terminator. 
+  10                 	; Board:
+  11                 	;      CME11-E9-EVBU (with the PW link HACK)
+  12                 	; Author:
+  13                 	;      Peter Walsh
+  14                 	;============================================-=
+  15                 	
+  16                 	;----------------------------------------------
+  17                 	;            Text Section (code and data)
+  18                 	;----------------------------------------------
+  19                 	.sect .text
+  20                 	.global _start
+  21                 	.global _.frame
+  22                 	
+  23                 	;---------------------------------------------
+  24                 	; Behaviour: 
+  25                 	;    Returns the address of STR.
+  26                 	;    This subroutine is for testing only (used by cew testbench) 
+  27                 	; Assumptions:
+  28                 	;    none
+  29                 	; Restriction:
+  30                 	;    subroutine may only accesses registers and the stack
+  31                 	; Register and Memory Usage:
+  32                 	;    Precondition:
+  33                 	;      none
+  34                 	;    Postcondition:
+  35                 	;      accd contains the returned value 
+  36                 	;    Destroyed:
+  37                 	;      ccr
+  38                 	;---------------------------------------------
+  39 0000 CC 00 00    	malloc:        ldd #STR
+  40 0003 39          	xmalloc:               rts
+  41                 	
+  42                 	_start:
+  43 0004 8E 00 00    	               lds #_stack    ; initialize SP
+  44 0007 BD 00 00    	               jsr malloc
+  45                 	               
+  46                 	smc:           
+  47 000a 3F          	               swi            ; return control to debugger
+  48                 	
+  49                 	
+  50                 	
+  51                 	;----------------------------------------------
+  52                 	;            Data Section
+  53                 	;----------------------------------------------
+  54 000b 30 31 32 33 	STR: .asciz "01233210" ; reserves a total of 30 bytes (8 +1 (\n) +21)
+  54      33 32 31 30 
+  54      00 
+  55 0014 01 01 01 01 	.space 21, 1
+M68HC11 GAS  main.s 			page 2
+
+
+  55      01 01 01 01 
+  55      01 01 01 01 
+  55      01 01 01 01 
+  55      01 01 01 01 
+  56                 	
+  57                 	;----------------------------------------------
+  58                 	;            Soft Registers
+  59                 	;----------------------------------------------
+  60                 	.sect softregs
+  61 0000 12 34       	_.frame: .word 0x1234
+  62                 	
+  63                 	.end
+M68HC11 GAS  main.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.s
+              main.s:0      .text:0000000000000000 L0F0
+              main.s:42     .text:0000000000000004 _start
+              main.s:61     softregs:0000000000000000 _.frame
+              main.s:39     .text:0000000000000000 malloc
+              main.s:39     .text:0000000000000000 L0L0
+              main.s:54     .text:000000000000000b STR
+              main.s:40     .text:0000000000000003 xmalloc
+              main.s:40     .text:0000000000000003 L0L1
+              main.s:43     .text:0000000000000004 L0L2
+              main.s:44     .text:0000000000000007 L0L3
+              main.s:46     .text:000000000000000a smc
+              main.s:47     .text:000000000000000a L0L4
+
+UNDEFINED SYMBOLS
+_stack

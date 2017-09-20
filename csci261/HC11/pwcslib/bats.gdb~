@@ -1,0 +1,74 @@
+
+
+#cew_Variables
+
+
+
+
+
+
+# Cew for asm Testing Script
+# Peter Walsh Mar 2002
+
+#------------ gdb/cew Initialization ---------------
+   #set remotebaud 9600
+   #target buffalo /dev/ttyS0
+   # NOTE... only tested on the simulator
+   target sim
+   load main.elf
+   set language asm
+   set $cew_Test_Count=0
+          set $cew_Error_Count=0
+
+
+#-------------- Local Assumptions -----------------
+#   strlen.s has a malloc() routine that always returns the
+#   address of STR
+
+#-------------- Local Constants -------------------
+   set $MAXLEN=30
+
+#-------------- Local Functions -------------------
+# Behaviour:
+#    Generate string at STR with values 1, 2, 3 .... $arg0, \0
+# Assumptions:
+#    $arg0 > 0
+define strGen
+   set $i=1
+   set $addr=(unsigned char *)&STR
+   while ($i <= $arg0)
+      set {unsigned char}$addr=$i
+      set $i++
+      set $addr++
+   end
+   set {unsigned char}$addr=0x0
+end
+
+#---------------- Test Cases -----------------------
+   set {short int}(&smc+1)=strLen
+   #tests for strLen
+   #using the string from the main.s file
+   tbreak *strLen
+   tbreak *xstrLen
+   run 
+   set $d=(unsigned char *)&STR
+   set $xin=$x
+   set $yin=$y
+   set $spin=$sp
+   set $cew_Test_Count++
+          continue
+          set $cew_act=$d 
+
+          set $cew_exp=8
+          if (($cew_act) != ($cew_exp))
+             set $cew_Error_Count++
+             printf "__cew__Test Case ERROR (Ncase) in script at line number 48 \n"
+             printf "__cew__   Actual Value is %d \n", $cew_act
+             printf "__cew__   Expected Value is %d \n", $cew_exp
+          end
+
+   printf "__cew__**********Summary**********\n"
+         printf "__cew__Total number of test cases = %d \n", $cew_Test_Count
+         printf "__cew__Total number of test cases in error = %d \n", $cew_Error_Count
+
+   quit

@@ -1,0 +1,159 @@
+M68HC11 GAS  scada.s 			page 1
+
+
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "scada.s" 
+   4                 	; Behaviour: 
+   5                 	;      reads input from serial port
+   6                 	;      if '0' then write 0x00 to port A  
+   7                 	;      else if '1' write 0xFF to port A 
+   8                 	;      else if '2' re-enter BUFFALO monitor
+   9                 	;      else if '3' 
+  10                 	
+  11                 	; Assumptions:
+  12                 	;      none
+  13                 	; Destroys:
+  14                 	;      a, x
+  15                 	; Board:
+  16                 	;      CME11-E9-EVBU
+  17                 	; Author:
+  18                 	;      Peter Walsh
+  19                 	;============================================-=
+  20                 	
+  21                 	set RBASE, 0x1000
+  22                 	
+  23                 	set PORTA, 0x0
+  24                 	set ONLED, 0xff
+  25                 	set OFFLED, 0x0
+  26                 	set ONSTATE, 0x35
+  27                 	set OFFSTATE, 0x34
+  28                 	set INCHAR, 0xffcd
+  29                 	set OUTA, 0xffb8
+  30                 	set CRLF, 0xffc4
+  31                 	
+  32                 	
+  33                 	;----------------------------------------------
+  34                 	;            Text Section (code and data)
+  35                 	;----------------------------------------------
+  36                 	.sect .text
+  37                 	.global _start
+  38                 	
+  39 0000 8E 00 00    	_start:  lds #_stack
+  40                 	
+  41 0003 CE 10 00    	         ldx #RBASE
+  42 0006 86 00       	         ldaa #OFFLED
+  43 0008 A7 00       	         staa PORTA,x
+  44 000a 86 34       	         ldaa #OFFSTATE
+  45 000c B7 00 00    	         staa state
+  46                 	
+  47 000f BD FF CD    	again:   jsr INCHAR
+  48                 	
+  49 0012 81 30       	         cmpa #0x30
+  50 0014 26 0B       	         bne setLed
+  51                 	
+  52                 	         #clead led
+  53 0016 86 00       	         ldaa #OFFLED
+  54 0018 A7 00       	         staa PORTA,x
+  55 001a 86 34       	         ldaa #OFFSTATE
+  56 001c B7 00 00    	         staa state
+  57 001f 20 EE       	         bra again
+M68HC11 GAS  scada.s 			page 2
+
+
+  58                 	
+  59                 	setLed: 
+  60 0021 81 31       	         cmpa #0x31
+  61 0023 26 0B       	         bne resetBuffalo
+  62                 	
+  63                 	         #set led
+  64 0025 86 FF       	         ldaa #ONLED
+  65 0027 A7 00       	         staa PORTA,x
+  66 0029 86 35       	         ldaa #ONSTATE
+  67 002b B7 00 00    	         staa state
+  68 002e 20 DF       	         bra again
+  69                 	
+  70                 	resetBuffalo: 
+  71 0030 81 32       	         cmpa #0x32
+  72 0032 26 04       	         bne GetState 
+  73                 	
+  74                 	         #  reset Buffalo
+  75 0034 BD FF CD    	         jsr INCHAR ; remove the ENTER from input stream
+  76 0037 3F          	         swi
+  77                 	
+  78                 	GetState: 
+  79 0038 81 33       	         cmpa #0x33
+  80 003a 26 08       	         bne default
+  81                 	
+  82                 	         # get state
+  83 003c B6 00 00    	         ldaa state
+  84 003f BD FF B8    	         jsr OUTA
+  85 0042 20 CB       	         bra again
+  86                 	
+  87                 	default: 
+  88                 	         ; default
+  89 0044 20 C9       	         bra again
+  90                 	
+  91                 	;----------------------------------------------
+  92                 	;            Data (in the text section)
+  93                 	;----------------------------------------------
+  94                 	
+  95                 	state: .byte
+  96                 	
+  97                 	.end
+M68HC11 GAS  scada.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 scada.s
+             scada.s:0      .text:0000000000000000 L0F0
+             scada.s:21     *ABS*:0000000000001000 RBASE
+             scada.s:23     *ABS*:0000000000000000 PORTA
+             scada.s:24     *ABS*:00000000000000ff ONLED
+             scada.s:25     *ABS*:0000000000000000 OFFLED
+             scada.s:26     *ABS*:0000000000000035 ONSTATE
+             scada.s:27     *ABS*:0000000000000034 OFFSTATE
+             scada.s:28     *ABS*:000000000000ffcd INCHAR
+             scada.s:29     *ABS*:000000000000ffb8 OUTA
+             scada.s:30     *ABS*:000000000000ffc4 CRLF
+             scada.s:39     .text:0000000000000000 _start
+             scada.s:39     .text:0000000000000000 L0L0
+             scada.s:41     .text:0000000000000003 L0L1
+             scada.s:42     .text:0000000000000006 L0L2
+             scada.s:43     .text:0000000000000008 L0L3
+             scada.s:44     .text:000000000000000a L0L4
+             scada.s:45     .text:000000000000000c L0L5
+             scada.s:95     .text:0000000000000046 state
+             scada.s:47     .text:000000000000000f again
+             scada.s:47     .text:000000000000000f L0L6
+             scada.s:49     .text:0000000000000012 L0L7
+             scada.s:50     .text:0000000000000014 L0L8
+             scada.s:59     .text:0000000000000021 setLed
+             scada.s:53     .text:0000000000000016 L0L9
+             scada.s:54     .text:0000000000000018 L0L10
+             scada.s:55     .text:000000000000001a L0L11
+             scada.s:56     .text:000000000000001c L0L12
+             scada.s:57     .text:000000000000001f L0L13
+             scada.s:60     .text:0000000000000021 L0L14
+             scada.s:61     .text:0000000000000023 L0L15
+             scada.s:70     .text:0000000000000030 resetBuffalo
+             scada.s:64     .text:0000000000000025 L0L16
+             scada.s:65     .text:0000000000000027 L0L17
+             scada.s:66     .text:0000000000000029 L0L18
+             scada.s:67     .text:000000000000002b L0L19
+             scada.s:68     .text:000000000000002e L0L20
+             scada.s:71     .text:0000000000000030 L0L21
+             scada.s:72     .text:0000000000000032 L0L22
+             scada.s:78     .text:0000000000000038 GetState
+             scada.s:75     .text:0000000000000034 L0L23
+             scada.s:76     .text:0000000000000037 L0L24
+             scada.s:79     .text:0000000000000038 L0L25
+             scada.s:80     .text:000000000000003a L0L26
+             scada.s:87     .text:0000000000000044 default
+             scada.s:83     .text:000000000000003c L0L27
+             scada.s:84     .text:000000000000003f L0L28
+             scada.s:85     .text:0000000000000042 L0L29
+             scada.s:89     .text:0000000000000044 L0L30
+
+UNDEFINED SYMBOLS
+_stack

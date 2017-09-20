@@ -1,0 +1,146 @@
+M68HC11 GAS  pwcslib.s 			page 1
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 pwcslib.h
+                            *ABS*:0000000000000000 pwcslib.h
+           pwcslib.s:0      .text:0000000000000000 L0F0
+           pwcslib.s:22     .text:0000000000000000 strLen
+           pwcslib.s:40     .text:0000000000000016 xstrLen
+           pwcslib.s:43     .text:0000000000000017 toUpper
+           pwcslib.s:45     .text:0000000000000019 xtoUpper
+           pwcslib.s:48     .text:000000000000001a toLower
+           pwcslib.s:50     .text:000000000000001c xtoLower
+           pwcslib.s:53     .text:000000000000001d isNumeric
+           pwcslib.s:78     .text:0000000000000038 xisNumeric
+           pwcslib.s:81     .text:0000000000000039 isUpper
+           pwcslib.s:106    .text:0000000000000054 xisUpper
+           pwcslib.s:109    .text:0000000000000055 isLower
+           pwcslib.s:134    .text:0000000000000070 xisLower
+           pwcslib.s:137    .text:0000000000000071 isControl
+           pwcslib.s:162    .text:000000000000008c xisControl
+           pwcslib.s:165    .text:000000000000008d isSpace
+           pwcslib.s:177    .text:000000000000009b xisSpace
+           pwcslib.s:22     .text:0000000000000000 L0L0
+           pwcslib.s:23     .text:0000000000000001 L0L1
+           pwcslib.s:25     .text:0000000000000003 L0L2
+           pwcslib.s:26     .text:0000000000000007 L0L3
+           pwcslib.s:28     .text:0000000000000008 nextChar
+           pwcslib.s:28     .text:0000000000000008 L0L4
+           pwcslib.s:29     .text:000000000000000a L0L5
+           pwcslib.s:36     .text:0000000000000011 countDone
+           pwcslib.s:31     .text:000000000000000c L0L6
+           pwcslib.s:32     .text:000000000000000e L0L7
+           pwcslib.s:34     .text:000000000000000f L0L8
+           pwcslib.s:36     .text:0000000000000011 L0L9
+           pwcslib.s:38     .text:0000000000000013 L0L10
+           pwcslib.s:39     .text:0000000000000015 L0L11
+           pwcslib.s:40     .text:0000000000000016 L0L12
+           pwcslib.s:44     .text:0000000000000017 L0L13
+           pwcslib.s:45     .text:0000000000000019 L0L14
+           pwcslib.s:49     .text:000000000000001a L0L15
+           pwcslib.s:50     .text:000000000000001c L0L16
+           pwcslib.s:54     .text:000000000000001d L0L17
+           pwcslib.s:55     .text:000000000000001e L0L18
+           pwcslib.s:56     .text:000000000000001f L0L19
+           pwcslib.s:57     .text:0000000000000020 L0L20
+           pwcslib.s:58     .text:0000000000000021 L0L21
+           pwcslib.s:60     .text:0000000000000022 L0L22
+           pwcslib.s:61     .text:0000000000000024 L0L23
+           pwcslib.s:62     .text:0000000000000026 L0L24
+           pwcslib.s:71     .text:0000000000000032 notNumeric
+           pwcslib.s:64     .text:0000000000000028 L0L25
+           pwcslib.s:65     .text:000000000000002a L0L26
+           pwcslib.s:66     .text:000000000000002c L0L27
+           pwcslib.s:68     .text:000000000000002e L0L28
+           pwcslib.s:69     .text:0000000000000030 L0L29
+           pwcslib.s:73     .text:0000000000000034 isNumericCleanUp
+           pwcslib.s:71     .text:0000000000000032 L0L30
+           pwcslib.s:74     .text:0000000000000034 L0L31
+           pwcslib.s:75     .text:0000000000000035 L0L32
+M68HC11 GAS  pwcslib.s 			page 2
+
+
+           pwcslib.s:76     .text:0000000000000036 L0L33
+           pwcslib.s:77     .text:0000000000000037 L0L34
+           pwcslib.s:78     .text:0000000000000038 L0L35
+           pwcslib.s:82     .text:0000000000000039 L0L36
+           pwcslib.s:83     .text:000000000000003a L0L37
+           pwcslib.s:84     .text:000000000000003b L0L38
+           pwcslib.s:85     .text:000000000000003c L0L39
+           pwcslib.s:86     .text:000000000000003d L0L40
+           pwcslib.s:88     .text:000000000000003e L0L41
+           pwcslib.s:89     .text:0000000000000040 L0L42
+           pwcslib.s:90     .text:0000000000000042 L0L43
+           pwcslib.s:99     .text:000000000000004e notUpper
+           pwcslib.s:92     .text:0000000000000044 L0L44
+           pwcslib.s:93     .text:0000000000000046 L0L45
+           pwcslib.s:94     .text:0000000000000048 L0L46
+           pwcslib.s:96     .text:000000000000004a L0L47
+           pwcslib.s:97     .text:000000000000004c L0L48
+           pwcslib.s:101    .text:0000000000000050 isUpperCleanUp
+           pwcslib.s:99     .text:000000000000004e L0L49
+           pwcslib.s:102    .text:0000000000000050 L0L50
+           pwcslib.s:103    .text:0000000000000051 L0L51
+           pwcslib.s:104    .text:0000000000000052 L0L52
+           pwcslib.s:105    .text:0000000000000053 L0L53
+           pwcslib.s:106    .text:0000000000000054 L0L54
+           pwcslib.s:110    .text:0000000000000055 L0L55
+           pwcslib.s:111    .text:0000000000000056 L0L56
+           pwcslib.s:112    .text:0000000000000057 L0L57
+           pwcslib.s:113    .text:0000000000000058 L0L58
+           pwcslib.s:114    .text:0000000000000059 L0L59
+           pwcslib.s:116    .text:000000000000005a L0L60
+           pwcslib.s:117    .text:000000000000005c L0L61
+           pwcslib.s:118    .text:000000000000005e L0L62
+           pwcslib.s:127    .text:000000000000006a notLower
+           pwcslib.s:120    .text:0000000000000060 L0L63
+           pwcslib.s:121    .text:0000000000000062 L0L64
+           pwcslib.s:122    .text:0000000000000064 L0L65
+           pwcslib.s:124    .text:0000000000000066 L0L66
+           pwcslib.s:125    .text:0000000000000068 L0L67
+           pwcslib.s:129    .text:000000000000006c isLowerCleanUp
+           pwcslib.s:127    .text:000000000000006a L0L68
+           pwcslib.s:130    .text:000000000000006c L0L69
+           pwcslib.s:131    .text:000000000000006d L0L70
+           pwcslib.s:132    .text:000000000000006e L0L71
+           pwcslib.s:133    .text:000000000000006f L0L72
+           pwcslib.s:134    .text:0000000000000070 L0L73
+           pwcslib.s:138    .text:0000000000000071 L0L74
+           pwcslib.s:139    .text:0000000000000072 L0L75
+           pwcslib.s:140    .text:0000000000000073 L0L76
+           pwcslib.s:141    .text:0000000000000074 L0L77
+           pwcslib.s:142    .text:0000000000000075 L0L78
+           pwcslib.s:144    .text:0000000000000076 L0L79
+           pwcslib.s:145    .text:0000000000000078 L0L80
+           pwcslib.s:146    .text:000000000000007a L0L81
+           pwcslib.s:155    .text:0000000000000086 notControl
+           pwcslib.s:148    .text:000000000000007c L0L82
+           pwcslib.s:149    .text:000000000000007e L0L83
+           pwcslib.s:150    .text:0000000000000080 L0L84
+M68HC11 GAS  pwcslib.s 			page 3
+
+
+           pwcslib.s:152    .text:0000000000000082 L0L85
+           pwcslib.s:153    .text:0000000000000084 L0L86
+           pwcslib.s:157    .text:0000000000000088 isControlCleanUp
+           pwcslib.s:155    .text:0000000000000086 L0L87
+           pwcslib.s:158    .text:0000000000000088 L0L88
+           pwcslib.s:159    .text:0000000000000089 L0L89
+           pwcslib.s:160    .text:000000000000008a L0L90
+           pwcslib.s:161    .text:000000000000008b L0L91
+           pwcslib.s:162    .text:000000000000008c L0L92
+           pwcslib.s:166    .text:000000000000008d L0L93
+           pwcslib.s:167    .text:000000000000008e L0L94
+           pwcslib.s:168    .text:000000000000008f L0L95
+           pwcslib.s:169    .text:0000000000000091 L0L96
+           pwcslib.s:173    .text:0000000000000097 notSpace
+           pwcslib.s:170    .text:0000000000000093 L0L97
+           pwcslib.s:171    .text:0000000000000095 L0L98
+           pwcslib.s:174    .text:0000000000000099 isSpaceCleanUp
+           pwcslib.s:173    .text:0000000000000097 L0L99
+           pwcslib.s:175    .text:0000000000000099 L0L100
+           pwcslib.s:176    .text:000000000000009a L0L101
+           pwcslib.s:177    .text:000000000000009b L0L102
+
+NO UNDEFINED SYMBOLS

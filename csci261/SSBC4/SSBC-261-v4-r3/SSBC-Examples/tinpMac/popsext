@@ -1,0 +1,9 @@
+00000010 pushimm L(A)
+11111100 
+00000010 pushimm H(A)
+11111111 
+00000010 pushimm F0
+11110000 
+00001100 popsext
+00000001 halt
+00000000 A should have the value F0

@@ -1,0 +1,70 @@
+M68HC11 GAS  main.s 			page 1
+
+
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "wave.s" 
+   4                 	; Behaviour: 
+   5                 	;      Generates a 1KHz square wave with a 40% duty cycle
+   6                 	;      using polling   (see text page 366)
+   7                 	; Assumptions:
+   8                 	;      none
+   9                 	; Board:
+  10                 	;      CME11-E9-EVBU
+  11                 	; Author/Date:
+  12                 	;      Peter Walsh Feb 2001
+  13                 	;      revised Feb 2002
+  14                 	;==========================================-=
+  15                 	
+  16                 	;----------------------------------------------
+  17                 	;            Text Section (code and data)
+  18                 	;----------------------------------------------
+  19                 	.sect .text 
+  20                 	.global _start
+  21                 	
+  22                 	set outa, 0xffb8
+  23                 	set out1byt, 0xffbb
+  24                 	set out1bsp, 0xffbe
+  25                 	set outcrlf, 0xffc4
+  26                 	
+  27                 	_start:               
+  28                 	reduce: 
+  29 0000 B6 00 00    	      ldaa count
+  30 0003 BD FF B8    	      jsr outa
+  31                 	      ;jsr outcrlf
+  32 0006 7A 00 00    	      dec count
+  33 0009 7A 00 00    	      dec num
+  34 000c 26 F2       	      bne reduce
+  35                 	
+  36 000e 3F          	end:    swi
+  37                 	
+  38 000f 61          	startchar:     .byte 'a'
+  39 0010 7A          	endchar:       .byte 'z'
+  40 0011 09          	count:   .byte 9
+  41                 	
+  42                 	.end
+M68HC11 GAS  main.s 			page 2
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 wave.s
+              main.s:0      .text:0000000000000000 L0F0
+              main.s:27     .text:0000000000000000 _start
+              main.s:22     *ABS*:000000000000ffb8 outa
+              main.s:23     *ABS*:000000000000ffbb out1byt
+              main.s:24     *ABS*:000000000000ffbe out1bsp
+              main.s:25     *ABS*:000000000000ffc4 outcrlf
+              main.s:28     .text:0000000000000000 reduce
+              main.s:29     .text:0000000000000000 L0L0
+              main.s:40     .text:0000000000000011 count
+              main.s:30     .text:0000000000000003 L0L1
+              main.s:32     .text:0000000000000006 L0L2
+              main.s:33     .text:0000000000000009 L0L3
+              main.s:34     .text:000000000000000c L0L4
+              main.s:36     .text:000000000000000e end
+              main.s:36     .text:000000000000000e L0L5
+              main.s:38     .text:000000000000000f startchar
+              main.s:39     .text:0000000000000010 endchar
+
+UNDEFINED SYMBOLS
+num

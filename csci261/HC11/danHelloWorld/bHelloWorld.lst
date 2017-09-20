@@ -1,0 +1,45 @@
+M68HC11 GAS  bHelloWorld.s 			page 1
+
+
+   1                 	;============================================-=
+   2                 	; File:
+   3                 	       .file "bHelloWorld.s" 
+   4                 	; Behaviour: 
+   5                 	;      Prints Hello World and waits for the user to enter a character
+   6                 	;      before terminating.
+   7                 	; Assumptions:
+   8                 	;      Availability of Buffalo monitor's I/O routines
+   9                 	; Board:
+  10                 	;      CME11-E9-EVBU (with PW linker hack)
+  11                 	; Author/Date:
+  12                 	;      Peter Walsh Mar 2003
+  13                 	;==========================================-=
+  14                 	
+  15                 	;----------------------------------------------
+  16                 	;            Text Section (code and data)
+  17                 	;----------------------------------------------
+  18                 	.sect .text 
+  19                 	.global _start
+  20                 	
+  21                 	set OUTSTRGO, 0xffca
+  22                 	set INCHAR, 0xffcd
+  23                 	set eot, 0x4
+  24                 	
+  25                 	_start:
+  26 0000 8E 00 00    	   lds #_stack     ; init. SP
+  27 0003 CE 00 00    	   ldx #PROMPT     ; get starting address of prompt
+  28 0006 BD FF CA    	   jsr OUTSTRGO    ; write Hello World
+  29 0009 BD FF CD    	   jsr INCHAR      ; wait for the user to type a char
+  30 000c 3F          	   swi
+  31                 	
+  32                 	;----------------------------------------------
+  33                 	;            Data (in Text section)
+  34                 	;----------------------------------------------
+  35 000d 48 65 6C 6C 	PROMPT: .asciz "Hello World (press any key to continue)"
+  35      6F 20 57 6F 
+  35      72 6C 64 20 
+  35      28 70 72 65 
+  35      73 73 20 61 
+  36 0035 04          	.byte eot
+  37                 	
+  38                 	.end

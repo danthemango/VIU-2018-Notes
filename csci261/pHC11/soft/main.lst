@@ -1,0 +1,88 @@
+M68HC11 GAS  main.s 			page 1
+
+
+   1                 	;;;-----------------------------------------
+   2                 	;;; Start MC68HC11 gcc assembly output
+   3                 	;;; gcc compiler 3.3.5-m68hc1x-20050129
+   4                 	;;; Command:	/usr/lib/gcc-lib/m6811-elf/3.3.5-m68hc1x-20050129/cc1 -quiet -D__GNUC__=3 -D__GNUC_MIN
+   5                 	;;; Compiled:	Thu Mar 17 13:40:24 2005
+   6                 	;;; (META)compiled by GNU C version 3.2.
+   7                 	;;;-----------------------------------------
+   8                 		.file	"main.c"
+   9                 		.mode mshort
+  10                 		; extern	foo
+  11                 		.sect	.text
+  12                 		.globl	_start
+  13                 		.type	_start,@function
+  14                 	_start:
+  15 0000 DE 00       		ldx	*_.frame
+  16 0002 3C          		pshx
+  17 0003 9F 00       		sts	*_.frame
+  18 0005 C6 03       		ldab	#3
+  19 0007 37          		pshb
+  20 0008 34          		des
+  21 0009 C6 02       		ldab	#2
+  22 000b 37          		pshb
+  23 000c 34          		des
+  24 000d C6 01       		ldab	#1
+  25 000f 8D 07       		bsr	foo
+  26 0011 4F          		clra
+  27 0012 38          		pulx
+  28 0013 38          		pulx
+  29 0014 38          		pulx
+  30 0015 DF 00       		stx	*_.frame
+  31 0017 39          		rts
+  32                 		.size	_start, .-_start
+  33                 		.globl	foo
+  34                 		.type	foo,@function
+  35                 	foo:
+  36 0018 DE 00       		ldx	*_.frame
+  37 001a 3C          		pshx
+  38 001b 9F 00       		sts	*_.frame
+  39 001d DE 00       		ldx	*_.frame
+  40 001f EB 06       		addb	6,x
+  41 0021 E0 08       		subb	8,x
+  42 0023 4F          		clra
+  43 0024 38          		pulx
+  44 0025 DF 00       		stx	*_.frame
+  45 0027 39          		rts
+  46                 		.size	foo, .-foo
+  47                 		.ident	"GCC: (GNU) 3.3.5-m68hc1x-20050129"
+M68HC11 GAS  main.s 			page 2
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+              main.s:0      .text:00000000 L0F0
+              main.s:14     .text:00000000 _start
+              main.s:15     .text:00000000 L0L0
+              main.s:16     .text:00000002 L0L1
+              main.s:17     .text:00000003 L0L2
+              main.s:18     .text:00000005 L0L3
+              main.s:19     .text:00000007 L0L4
+              main.s:20     .text:00000008 L0L5
+              main.s:21     .text:00000009 L0L6
+              main.s:22     .text:0000000b L0L7
+              main.s:23     .text:0000000c L0L8
+              main.s:24     .text:0000000d L0L9
+              main.s:25     .text:0000000f L0L10
+              main.s:35     .text:00000018 foo
+              main.s:26     .text:00000011 L0L11
+              main.s:27     .text:00000012 L0L12
+              main.s:28     .text:00000013 L0L13
+              main.s:29     .text:00000014 L0L14
+              main.s:30     .text:00000015 L0L15
+              main.s:31     .text:00000017 L0L16
+              main.s:36     .text:00000018 L0L17
+              main.s:37     .text:0000001a L0L18
+              main.s:38     .text:0000001b L0L19
+              main.s:39     .text:0000001d L0L20
+              main.s:40     .text:0000001f L0L21
+              main.s:41     .text:00000021 L0L22
+              main.s:42     .text:00000023 L0L23
+              main.s:43     .text:00000024 L0L24
+              main.s:44     .text:00000025 L0L25
+              main.s:45     .text:00000027 L0L26
+
+UNDEFINED SYMBOLS
+_.frame

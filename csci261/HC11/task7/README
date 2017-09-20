@@ -1,0 +1,13 @@
+CSCI 261 Lab Task 7
+===================
+
+
+Develop a HC11 assembly language program that produces a 30% duty cycle
+square wave on PA6. Your program must use interrupts to advantage.
+
+Deliverables
+============
+
+1. A printout of your assembly language  program.
+
+2. A demonstration of your program producing the required square wave.

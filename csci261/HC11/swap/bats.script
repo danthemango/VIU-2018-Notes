@@ -1,0 +1,51 @@
+include(CewDir/bin/cew.gdb)
+# Cew for asm Testing Script
+# Peter Walsh Feb 2001
+
+#------------ gdb/cew Initialization ---------------
+  set remotebaud 9600
+   target buffalo /dev/ttyUSB0
+  # target sim
+   load swap.elf
+   set language asm
+   cew_Variables
+
+
+#-------------- Local Assumptions -----------------
+#  none
+
+#-------------- Local Constants -------------------
+#  none
+
+#-------------- Local Functions -------------------
+#  none
+
+#---------------- Test Cases ----------------------
+   # verify swap behaviour using assembled data values for AA and BB
+   cew_Ncase(,  {unsigned char}&AA , 0x3) 
+   cew_Ncase(,  {unsigned char}&BB , 0x4) 
+   cew_Ncase(run, {unsigned char}&AA , 0x4) 
+   cew_Ncase(, {unsigned char}&BB , 0x3) 
+
+   # modify data values for AA and BB and verify swap behaviour
+   cew_Ncase(set {unsigned char}&AA=6; set {unsigned char}&BB=7; run, {unsigned char}&AA , 0x7) 
+   cew_Ncase(, {unsigned char}&BB , 0x6) 
+
+   # check register values
+   cew_Ncase(, $a , 0x7) 
+   cew_Ncase(, $b , 0x6) 
+
+   # check input/output reg parameters and ccr
+   set {unsigned char}&AA=6 
+   set {unsigned char}&BB=7 
+   tbreak *swapab
+   tbreak *xswapab
+   cew_Ncase(run, $a, 6)
+   set $ccrin=$ccr
+   cew_Ncase(, $b, 7)
+   cew_Ncase(continue, $a, 7)
+   cew_Ncase(, $b, 6)
+   cew_Ncase(, $ccr, $ccrin)
+
+   cew_Summary
+   quit
