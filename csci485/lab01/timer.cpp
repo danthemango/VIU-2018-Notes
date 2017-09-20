@@ -1,4 +1,3 @@
-// just a test of the time.h library
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
