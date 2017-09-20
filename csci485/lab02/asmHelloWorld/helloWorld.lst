@@ -1,0 +1,70 @@
+M68HC11 GAS  helloWorld.s 			page 1
+
+
+   1                 	;================================================
+   2                 	; File
+   3                 	   .file "helloWorld.s"
+   4                 	; prints hello world
+   5                 	; Daniel Guenther
+   6                 	; 2017-09-19
+   7                 	;================================================
+   8                 	
+   9                 	.sect .text
+  10                 	.global _start
+  11                 	
+  12                 	; useful subroutines
+  13                 	set OUTLHLF, 0xffb2
+  14                 	set OUTRHLF, 0xffb5
+  15                 	set OUTA, 0xffb8
+  16                 	set OUT1BYT, 0xffbb
+  17                 	set OUT1BSP, 0xffbe
+  18                 	set OUT2BSP, 0xffc1
+  19                 	set OUTSTRG, 0xffc7
+  20                 	set OUTSTRGO, 0xffca
+  21                 	set OUTCRLF, 0xffc4
+  22                 	
+  23                 	;end of string byte
+  24                 	set eot, 0x4                           
+  25                 	
+  26                 	_start:
+  27 0000 CE 00 00    	            ldx #helloWorld
+  28 0003 BD FF C7    	            jsr OUTSTRG
+  29                 	
+  30                 	end: 
+  31 0006 3F          	            swi
+  32                 	
+  33 0007 48 65 6C 6C 	helloWorld:       .asciz "Hello World"
+  33      6F 20 57 6F 
+  33      72 6C 64 00 
+  34 0013 04          	.byte eot
+  35                 	
+  36                 	; set up dummy frame pointer
+  37                 	.global _.frame
+  38                 	_.frame: .word
+  39                 	
+  40                 	.end
+M68HC11 GAS  helloWorld.s 			page 2
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 helloWorld.s
+        helloWorld.s:0      .text:0000000000000000 L0F0
+        helloWorld.s:26     .text:0000000000000000 _start
+        helloWorld.s:13     *ABS*:000000000000ffb2 OUTLHLF
+        helloWorld.s:14     *ABS*:000000000000ffb5 OUTRHLF
+        helloWorld.s:15     *ABS*:000000000000ffb8 OUTA
+        helloWorld.s:16     *ABS*:000000000000ffbb OUT1BYT
+        helloWorld.s:17     *ABS*:000000000000ffbe OUT1BSP
+        helloWorld.s:18     *ABS*:000000000000ffc1 OUT2BSP
+        helloWorld.s:19     *ABS*:000000000000ffc7 OUTSTRG
+        helloWorld.s:20     *ABS*:000000000000ffca OUTSTRGO
+        helloWorld.s:21     *ABS*:000000000000ffc4 OUTCRLF
+        helloWorld.s:24     *ABS*:0000000000000004 eot
+        helloWorld.s:27     .text:0000000000000000 L0L0
+        helloWorld.s:33     .text:0000000000000007 helloWorld
+        helloWorld.s:28     .text:0000000000000003 L0L1
+        helloWorld.s:30     .text:0000000000000006 end
+        helloWorld.s:31     .text:0000000000000006 L0L2
+        helloWorld.s:38     .text:0000000000000014 _.frame
+
+NO UNDEFINED SYMBOLS
