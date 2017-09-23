@@ -29,6 +29,10 @@ LD=m68hc11-ld
 GDB=m68hc11-gdb
 OC=m68hc11-objcopy
 
+main.elf: main.o $(SRC).o
+	$(LD)  -O0 --verbose -N -mshort -mm68hc11elfb main.o $(SRC).o -o main.elf
+	$(OC) -O srec --only-section=.text main.elf main.s19
+
 interactive: main.elf
 	$(GDB) main.elf
 
@@ -51,10 +55,6 @@ main.s: main.c
 
 main.o: main.s
 	$(AS)   -a=main.lst --gstabs -o main.o main.s
-
-main.elf: main.o $(SRC).o
-	$(LD)  -O0 --verbose -N -mshort -mm68hc11elfb main.o $(SRC).o -o main.elf
-	$(OC) -O srec --only-section=.text main.elf main.s19
 
 submit:
 	@echo "Nothing to submit"
