@@ -1,0 +1,4 @@
+- pack extra buttons to the pc_consumer GUI
+- set the pc_producer/pc_consumer to respond to signals to "pc_productionEnabled" and "pc_consumptionEnabled"
+
+

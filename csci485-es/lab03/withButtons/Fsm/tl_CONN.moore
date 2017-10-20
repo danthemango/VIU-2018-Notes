@@ -1,0 +1,108 @@
+package Fsm::tl_CONN;
+#================================================================--
+# File Name    : Fsm/tl_CONN.moore
+#
+# Purpose      : task traffic light controller
+#
+# Author       : Peter Walsh, Vancouver Island University
+#
+# System       : Perl (Linux)
+#
+#=========================================================
+
+$|=1;
+use strict;
+use warnings;
+
+use Table::SVAR;
+
+include(moore.pl)
+
+moore_Begin
+
+moore_TableBegin("HG")
+
+my $ns;
+
+# Current State Action Next State
+
+moore_TableRow(
+   "HG", 
+
+   tl_Console::GUI->set_lights("gray", "gray", "green", "red", "gray", "gray"); 
+   my $car = Table::SVAR->get_value("sv_car");
+   my $lto = Table::SVAR->get_value("sv_lto");
+   my $sto = Table::SVAR->get_value("sv_sto");
+   if (!($car && $lto)) {
+      $ns = "HG";
+   } else {
+      $ns = "HY";
+      Table::TASK->reset("tl_STO");
+      Table::TASK->reset("tl_LTO");
+   },
+
+   $ns
+)
+
+
+moore_TableRow(
+   "HY", 
+
+   tl_Console::GUI->set_lights("gray", "yellow", "gray", "red", "gray", "gray"); 
+   my $car = Table::SVAR->get_value("sv_car");
+   my $lto = Table::SVAR->get_value("sv_lto");
+   my $sto = Table::SVAR->get_value("sv_sto");
+   if (!$sto) {
+      $ns = "HY";
+   } else {
+      $ns = "FG";
+      Table::TASK->reset("tl_STO");
+      Table::TASK->reset("tl_LTO");
+   },
+
+   $ns
+)
+
+moore_TableRow(
+   "FG", 
+
+   tl_Console::GUI->set_lights("red", "gray", "gray", "gray", "gray", "green");
+   my $car = Table::SVAR->get_value("sv_car");
+   my $lto = Table::SVAR->get_value("sv_lto");
+   my $sto = Table::SVAR->get_value("sv_sto");
+   if (($car || (!$sto)) && (!$lto)) {
+      $ns = "FG";
+   } else {
+      $ns = "FY";
+      Table::TASK->reset("tl_STO");
+      Table::TASK->reset("tl_LTO");
+   },
+
+   $ns
+)
+
+moore_TableRow(
+   "FY", 
+
+   tl_Console::GUI->set_lights("red", "gray", "gray", "gray", "yellow", "gray"); 
+   my $car = Table::SVAR->get_value("sv_car");
+   my $lto = Table::SVAR->get_value("sv_lto");
+   my $sto = Table::SVAR->get_value("sv_sto");
+   if (!$sto) {
+      $ns = "FY";
+   } else {
+      $ns = "HG";
+      Table::TASK->reset("tl_STO");
+      Table::TASK->reset("tl_LTO");
+   },
+
+  $ns
+)
+
+moore_TableEnd
+
+moore_Reset
+
+moore_End
+
+1;

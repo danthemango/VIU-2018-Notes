@@ -1,0 +1,78 @@
+package Fsm::tl_LTO;
+#================================================================--
+# File Name    : Fsm/tl_LTO.moore
+#
+# Purpose      : task long time out
+#
+# Author       : Peter Walsh, Vancouver Island University
+#
+# System       : Perl (Linux)
+#
+#=========================================================
+
+$|=1;
+use strict;
+use warnings;
+
+include(moore.pl)
+
+use constant TIMEOUT => 100;
+
+my $count;
+
+sub nextState {
+   my $c = shift @_;
+
+   if ($c == TIMEOUT) {
+      return("S2");
+   } else {
+      return("S1");
+   }
+}
+
+moore_Begin
+
+moore_TableBegin("S0") 
+
+moore_TableRow(
+   "S0",
+
+   $count = 1,
+
+   "S1"
+) 
+
+moore_TableRow(
+   "S1",
+
+   $count = $count +1,
+
+   nextState($count)
+)
+
+moore_TableRow(
+   "S2", 
+
+   Table::SVAR->assign("sv_lto", 1),
+
+   "S3"
+)
+
+moore_TableRow(
+   "S3", 
+
+   , 
+
+   "S3"
+)
+
+moore_TableEnd
+
+moore_Reset(
+   Table::SVAR->assign("sv_lto", 0)   
+)
+
+moore_End
+
+1;
+

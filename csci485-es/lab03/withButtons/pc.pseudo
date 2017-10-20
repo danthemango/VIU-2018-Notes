@@ -1,0 +1,68 @@
+// **********************************************
+// Filename:   pc.pseudo
+// Author:     Daniel Guenther (565154853)
+// Date:       2017-10-01
+// Class:      CSCI 485
+// Project:    lab04
+// Description:pseudocode for the tasks I want to write
+// Sources:
+//    - literally just copied from https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem#Using_semaphores so don't expect much
+// ************************************************
+
+// version without mutexes
+semaphore fillCount = 0; // items produced
+semaphore emptyCount = BUFFER_SIZE; // remaining space
+
+procedure producer() 
+{
+    while (true) 
+    {
+        item = produceItem();
+        down(emptyCount);
+        putItemIntoBuffer(item);
+        up(fillCount);
+    }
+}
+
+procedure consumer() 
+{
+    while (true) 
+    {
+        down(fillCount);
+        item = removeItemFromBuffer();
+        up(emptyCount);
+        consumeItem(item);
+    }
+}
+
+// version with mutexes
+mutex buffer_mutex; // similar to "semaphore buffer_mutex = 1", except the person who 'downed' it must be the one to 'up' it
+semaphore fillCount = 0;
+semaphore emptyCount = BUFFER_SIZE;
+
+procedure producer()
+{
+    while (true)
+    {
+        item = produceItem();
+        down(emptyCount);
+            down(buffer_mutex);
+                putItemIntoBuffer(item);
+            up(buffer_mutex);
+        up(fillCount);
+    }
+}
+
+procedure consumer()
+{
+    while (true)
+    {
+        down(fillCount);
+            down(buffer_mutex);
+                item = removeItemFromBuffer();
+            up(buffer_mutex);
+        up(emptyCount);
+        consumeItem(item);
+    }
+}
+

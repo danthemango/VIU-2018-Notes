@@ -1,0 +1,3 @@
+$carWindow->signal_connect('delete-event' => sub{ $_[0]->destroy});
+$carWindow->signal_connect('destroy-event' => sub{ $_[0]->destroy});
+$carWindow->signal_connect('destroy' => sub{Gtk->main_quit});

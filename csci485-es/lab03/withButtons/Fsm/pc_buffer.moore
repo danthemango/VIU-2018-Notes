@@ -1,0 +1,136 @@
+package Fsm::pc_buffer;
+#================================================================--
+# File Name    : Fsm/pc_buffer.moore
+#
+# Purpose      : producer consumer buffer (to drive the lights)
+#
+# Author       : Daniel Guenther, Vancouver Island University
+#
+# System       : Perl (Linux)
+#
+# Note:
+#  - up to four things can be in our buffer currently
+#=========================================================
+
+$|=1;
+use strict;
+use warnings;
+
+use Table::SVAR;
+
+include(moore.pl)
+
+moore_Begin
+
+moore_TableBegin("S0")
+
+my $ns;
+my $produce;
+my $consume;
+
+# Current State Action Next State
+# NOTE: we are creating four states, one for each possibile light
+# there are probably more effective ways of coding this, but I want to be relatively explicit 
+# with the states of this machine, until we have undetermined sized buffers
+moore_TableRow(
+    "S0",
+
+    pc_Console::GUI->set_lights("green", "green", "green", "green");
+    $produce = Table::SVAR->get_value("sv_produce");
+    $consume = Table::SVAR->get_value("sv_consume");
+    if($produce && !$consume){
+        $ns = "S1";
+    }elsif(!$produce && !$consume){
+        $ns = "S0";
+    }else{
+        $ns = "S0";
+        die("overconsumption! (pc_buffer,S0)!");
+    }
+    ,
+
+    $ns
+)
+
+moore_TableRow(
+   "S1",
+
+   pc_Console::GUI->set_lights("red", "green", "green", "green");
+   $produce = Table::SVAR->get_value("sv_produce");
+   $consume = Table::SVAR->get_value("sv_consume");
+   # DEBUG checking signals
+   print("sv_produce " . $produce . " sv_consume " . $consume . "\n");
+   if($produce && !$consume){
+      $ns = "S2";
+   }elsif(!$produce && $consume){
+      $ns = "S0";
+   }else{
+      $ns = "S1";
+   }
+   ,
+
+   $ns
+)
+
+moore_TableRow(
+   "S2",
+
+   pc_Console::GUI->set_lights("red", "red", "green", "green");
+   $produce = Table::SVAR->get_value("sv_produce");
+   $consume = Table::SVAR->get_value("sv_consume");
+   if($produce && !$consume){
+      $ns = "S3";
+   }elsif(!$produce && $consume){
+      $ns = "S1";
+   }else{
+      $ns = "S2";
+   }
+   ,
+
+   $ns
+)
+
+moore_TableRow(
+   "S3",
+
+   pc_Console::GUI->set_lights("red", "red", "red", "green");
+   $produce = Table::SVAR->get_value("sv_produce");
+   $consume = Table::SVAR->get_value("sv_consume");
+   if($produce && !$consume){
+      $ns = "S4";
+   }elsif(!$produce && $consume){
+      $ns = "S2";
+   }else{
+      $ns = "S3";
+   }
+   ,
+
+   $ns
+)
+
+moore_TableRow(
+   "S4",
+
+   pc_Console::GUI->set_lights("red", "red", "red", "red");
+   $produce = Table::SVAR->get_value("sv_produce");
+   $consume = Table::SVAR->get_value("sv_consume");
+   if($produce && !$consume){
+      die("overproduction! (pc_buffer, S4)");
+   }elsif(!$produce && $consume){
+      $ns = "S3";
+   }else{
+      $ns = "S4";
+   }
+   ,
+
+   $ns
+)
+
+
+moore_TableEnd
+
+moore_Reset
+
+moore_End
+
+1;
+

@@ -1,0 +1,92 @@
+package Fsm::pc_consumer;
+#================================================================--
+# File Name    : Fsm/pc_consumer.moore
+#
+# Purpose      : the consumer machine
+#
+# Author       : Daniel Guenther, Vancouver Island University
+#
+# System       : Perl (Linux)
+#
+#=========================================================
+
+$|=1;
+use strict;
+use warnings;
+
+use Table::SVAR;
+use Table::SEMAPHORE;
+
+include(moore.pl)
+
+moore_Begin
+
+moore_TableBegin("checkBuffer")
+
+my $ns;
+
+# Current State Action Next State
+# check buffer state used to check if the buffer has some elements to consume
+moore_TableRow(
+    "checkBuffer"
+    ,
+    print("S1\n");
+    if(Table::SVAR->get_value("sv_consumer_enable")){
+        print("Consumption start\n");
+        Table::SEMAPHORE->wait(semaphore => "fillCount", task => "pc_consumer");
+        $ns = "checkMutex";
+    }else{
+        print("Consumer disabled\n");
+        $ns = "checkBuffer";
+    }
+    ,
+
+    $ns
+)
+
+# check if the buffer is open for reading
+moore_TableRow(
+   "checkMutex"
+   ,
+   print("S2\n");
+   Table::SEMAPHORE->wait(semaphore => "bufferLockMutex", task => "pc_consumer");
+   $ns = "consumptionStart";
+   ,
+   $ns
+)
+
+# consumer item
+moore_TableRow(
+   "consumptionStart"
+   ,
+   print("S3\n");
+   print("consuming\n");
+   Table::SVAR->assign("sv_consume",1);
+   $ns = "consumptionEnd";
+   ,
+   $ns
+)
+
+# finish consumption
+moore_TableRow(
+   "consumptionEnd"
+   ,
+   print("S4\n");
+   Table::SVAR->assign("sv_consume",0);
+   Table::SEMAPHORE->signal(semaphore => "bufferLockMutex");
+   Table::SEMAPHORE->signal(semaphore => "emptyCount");
+   # NOTE: the thing pulled from the buffer would be consumed here
+   $ns = "checkBuffer";
+   ,
+   $ns
+)
+
+moore_TableEnd
+
+moore_Reset
+
+moore_End
+
+1;
+
+
