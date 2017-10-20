@@ -1,0 +1,43 @@
+#[optional] check the baud rate of the serial device
+ stty < /dev/ttyS0
+#connect to the device
+ minicom
+# use 'ctrl+a z' for minicom help, and 'ctrl+a x' to quit
+
+# if minicom fails, check if you are locking the device
+lsof | grep ttyS0
+
+#load the information on the minicom
+load t 
+# and from the terminal load the program s19 record
+cat 'programname'.s19 > /dev/ttyS0
+
+# note: m68hc11-run doesn't work with cHelloWorld nor asmHelloWorld:
+ (gdb) target sim
+ Connected to the simulator.
+ (gdb) load helloWorld.elf
+ Loading section .text, size 0x14 lma 0x2000
+ Start address 0x2000
+ Transfer rate: 160 bits in <1 sec.
+ (gdb) r
+ Starting program: /home/student/guenthdd/csci485/lab02/asmHelloWorld/helloWorld.elf 
+
+ Program received signal SIGSEGV, Segmentation fault.
+ L0L1 () at helloWorld.s:28
+ 28               jsr OUTSTRG
+ Current language:  auto; currently asm
+# and this is because OUTSTRG is part of the BUFFALO monitor system, on the board
+# however the GEL hello.c works in the simulator (not the board?)
+
+# in order to get the GEL examples to compile, change the following line in gel-hc1x-1.6.1/config/var.defs :
+DEVC_PREFIX=m6811-
+# with
+DEVC_PREFIX=m68hc11-
+
+# sample compile sequence (developed with the simple.c makefile)
+m68hc11-gcc  -m68hc11 -mshort -Wall -Wmissing-prototypes -g -Os   -I. -I../../gel-hc1x-1.6.1/include/asm-m68hc11/arch-cme11 -I../../gel-hc1x-1.6.1/include -c -o helloWorld.o helloWorld.c
+m68hc11-gcc -m68hc11 -mshort -Wl,-m,m68hc11elfb -L../../gel-hc1x-1.6.1/config/m68hc11-cme11 -o helloWorld.elf helloWorld.o ../../gel-hc1x-1.6.1/lib/libc.a ../../gel-hc1x-1.6.1/lib/libbsp.a ../../gel-hc1x-1.6.1/lib/libc.a
+m68hc11-objcopy --output-target=srec --only-section=.text --only-section=.rodata --only-section=.vectors --only-section=.data helloWorld.elf helloWorld.s19
+m68hc11-objcopy --output-target=binary --gap-fill=255 \
+        --only-section=.data --only-section=.text --only-section=.rodata --only-section=.vectors --only-section=.data helloWorld.elf helloWorld.b
+
