@@ -6,7 +6,7 @@
 const void * Set;
 
 static int heap [MANY];
-void * new (const void * type, ...)
+void * new (const void * type)
 {
    int * p; /* & heap[1..] */
    for (p = heap + 1; p < heap + MANY; ++ p)

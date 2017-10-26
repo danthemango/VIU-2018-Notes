@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include "new.h"
 #include "Object.h"

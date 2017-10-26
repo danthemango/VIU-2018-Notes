@@ -5,3 +5,6 @@ testprog: obj/main.o obj/Set.o obj/Object.o
 
 obj/%.o: %.c
 	gcc -Wall -c $^ -o $@
+
+clean:
+	rm -f obj/* testprog

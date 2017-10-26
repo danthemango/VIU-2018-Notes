@@ -1,0 +1,8 @@
+=== Lifo tester ===
+type 'h' for help
+> pushing num: > pushing num: > pushing num: > pushing num: > pushing num: > top: 6
+> > top: 7
+> > top: 8
+> > top: 9
+> > top: 10
+> > 
