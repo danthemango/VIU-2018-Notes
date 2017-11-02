@@ -1,29 +1,43 @@
 import argparse
+\
+# number of rows for a block
+height=3
 
 def main():
-   parser = argparse.ArgumentParser(description="MATH223 Ass.4: print the checker boards of length n");
-   parser.add_argument('-n', '--num', metavar='N', help="print a box of size n", type=int, required=True, default=4)
+   parser = argparse.ArgumentParser(description="MATH223 Ass.4: print the checker boards of size 2xN (given by -n), covered only by square and corner tiles");
+   parser.add_argument('-n', '--num', metavar='N', help="print boxes of size 2xN", type=int, required=True, default=4)
+   parser.add_argument('-c', '--cols', metavar='N', help="number of boxes to print before a linebreak", type=int, required=False, default=4)
    args = parser.parse_args()
    num = args.num
-   print("printing box of size", num)
-#   for i in range(s2NumPatterns):
-#       newBlocks = getStitchBlocks(s1(0),s2(i))
-#       printBlocks(newBlocks)
-   printBox(num)
+   cols = args.cols
+   print("printing all possible boxes of size 2 x", num)
+   boxarr = [box for box in getBox(num)]
+   numrows = int(len(boxarr)/cols)
+   if(len(boxarr)%cols!=0):
+       numrows+=1
+   # a row is a set of boxes
+   for row in range(numrows):
+       # a boxrow is a row *within* a single box
+       for boxrow in range(height):
+           # grab up to 'cols' number of boxes
+           for box in boxarr[row*cols:(1+row)*cols]:
+               print(box[boxrow], end='')
+           print()
 
-def printBox(num, start=["","",""]):
-    if(num == 0):
-        printBlocks(start)
-        return
-    if(num >= 1):
+# iterator which returns box string arrays
+# (note, first element is the top row, second is the middle and the last is the bottom)
+def getBox(size, start=["","",""]):
+    if(size == 0):
+        yield start
+    if(size >= 1):
         for i in range(s1NumPatterns):
-            printBox(num-1, getStitchBlocks(s1(i),start))
-    if(num >= 2):
+            yield from getBox(size-1, getStitchBlocks(start,s1(i)))
+    if(size >= 2):
         for i in range(s2NumPatterns):
-            printBox(num-2, getStitchBlocks(s2(i),start))
-    if(num >= 3):
+            yield from getBox(size-2, getStitchBlocks(start,s2(i)))
+    if(size >= 3):
         for i in range(s3NumPatterns):
-            printBox(num-3, getStitchBlocks(s3(i),start))
+            yield from getBox(size-3, getStitchBlocks(start,s3(i)))
 
 # returns a 2x1 checkerboard
 #   ┌┐
