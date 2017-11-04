@@ -1,7 +1,8 @@
 # Assignment 4
 In this assignment we were tasked to find and solve a number of recurrences, using the method of
-characteristic equations, particular solutions and generating functions. I do not have the answers here,
-but I used python to continuously double-check the results I was getting.
+characteristic equations, particular solutions and generating functions. I don't have the full description
+of how I found the answers here, but I used python to continuously double-check the results I was getting
+so this folder includes some helper-scripts I was using.
 
 ## Question 1
 This was a simple homogenous recurrence, so I just used the method of characteristic equations.
@@ -38,3 +39,7 @@ n, recurrence, function, difference
 Since I'm getting all 0's it means the function I got was correct.
 
 TODO q2..5
+
+## Checkerboxes
+check out the 'checkerboxes' folder for an application which will print out all possible tilings
+of a 2xN board using only square and corner tiles.

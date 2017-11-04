@@ -1,8 +1,10 @@
 # checkerboxes
 A python3 stript which prints all possible combinations of 2xN chessboards covered only by square and corner tiles
-
+             ┌┐               ┌┐
+square tile: └┘ corner tile:  │└┐
+                              └─┘
 ## Usage
-~~~bash
+```bash
 % python printBox.py -h
 usage: printBox.py [-h] -n N [-c N]
 
@@ -58,4 +60,4 @@ printing all possible boxes of size 2 x 5
 ┌┬─┬─┐┌┬─┬┬┐┌─┬┬┬┐┌─┬┬┬┐┌─┬┬─┐┌─┬┬─┐┌─┬┬┬┐
 │└┐├┐││└┐├┘││┌┘├┼┤│┌┘│└┤│┌┘│┌┤│┌┘├┐││┌┘├┘│
 └─┴┴┴┘└─┴┴─┘└┴─┴┴┘└┴─┴─┘└┴─┴┴┘└┴─┴┴┘└┴─┴─┘
-~~~
+```
