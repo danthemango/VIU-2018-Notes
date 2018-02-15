@@ -1,3 +1,4 @@
+#hello
 #+OPTIONS: toc:2a
 Metaprogramming http://csci.viu.ca/~wesselsd/courses/csci485/
 * 2018-01-10
@@ -43,6 +44,7 @@ Metaprogramming http://csci.viu.ca/~wesselsd/courses/csci485/
   - map assembly language to machine code
   - consider enhancements
 ** machine instructions
+#+BEGIN_EXAMPLE
   - 16-bit processor
   - 6 general purpose registers
   - instruction format: 3 or 4 bits describe operation type, remaining bits specify the options/operands
@@ -78,6 +80,7 @@ Metaprogramming http://csci.viu.ca/~wesselsd/courses/csci485/
   - copy contents of one register to another
               src, dst
     111 00000 ---- ----
+#+END_EXAMPLE
 ** assembly instructions
 - // for comments (ends and endl)
 - blank lines allowed, at least one whitespace before/after mneumonics
@@ -213,13 +216,13 @@ source code         --> tokenizer code -> token list ((keyword, "void"),(integer
   - we need a description of the source code language
 ** tokenize the source code
   - breaking pieces into the smallest logical units of the language
-    
-      void foo(int x, char y){
-         int a = x;
-         if(y == 'S') return q;
-         else return -q;
-      }
-
+#+BEGIN_SRC C++
+void foo(int x, char y){
+   int a = x;
+   if(y == 'S') return q;
+   else return -q;
+}
+#+END_SRC    
 - create a list of individual tokens, in order encountered
   - categorize them as well
   - e.g. identifier, keyword, delimiter, comment, ...
@@ -269,19 +272,19 @@ Op -> "*"
 #+END_EXAMPLE
 
 ** example
-x = 3 * 17 + y - Q
-(identifier, x)
-(assignop, =)
-(integer 3)
-(op, *)
-(integer, 17)
-(op, +)
-(identifier, y)
-(op, -)
-(identifier, Q)
+- what are the tokens of the following?: x = 3 * 17 + y - Q
+  1. (identifier, x)
+  2. (assignop, =)
+  3. (integer 3)
+  4. (op, *)
+  5. (integer, 17)
+  6. (op, +)
+  7. (identifier, y)
+  8. (op, -)
+  9. (identifier, Q)
 
-- How can you interpret this?
-
+*** what tree would we build?
+#+BEGIN_EXAMPLE
                     /-> Variable -> Identifier -> "x"
 AssignmentStatement +-> AssignOp -> AssignOp -> PlainOp -> "="
                     \-> Expression
@@ -293,13 +296,15 @@ AssignmentStatement +-> AssignOp -> AssignOp -> PlainOp -> "="
                                            \-17     \Identifier       \Identifier
                                                     \y                \Q
 
+#+END_EXAMPLE
 ** remaining tokens
+#+BEGIN_EXAMPLE
 Program -> GlobalDefinitions MainRoutine
 GlobalDefinitions -> FunctionDef
                   -> GlobalVarDef
                   -> TypeDef
 MainRoutine -> keyword:'main' ParamList Body
-
+#+END_EXAMPLE
 ** Augmented Grammar Rules
 - var must be previously declared (type given in declaration)
 - assignop must be type-compatible with the var
@@ -384,34 +389,40 @@ MainRoutine -> keyword:'main' ParamList Body
 - puts "hello world"
 - puts " something #{x} something"
 **** if
-- if x < y then
-  - eee
-- elsif x < 2 then
-  - eee
-- else
-  - eee
-- end
-- logic ops: &&, ||, !
-**** loops
-- loops
-  - while x < y
-    - eee
-  - end
-- for x in 17..204 do
-  - work
-- end
-- array.each do |i|
-  - something
-- end
-- (17..204).each do |i|
-  - eee
-- end
-**** array
-- [10,20,30]
-**** function
-- def myfunc(p1,p2,p3)
-  - something
-- end
+#+BEGIN_SRC ruby
+puts "hello world"
+puts " something #{x} something"
+# example if else
+if x < 1 then
+   puts "x is less than 1"
+elsif x < 2
+   puts "x is less than 2"
+else
+   puts "x is greater than 1"
+end
+# can use &&, ||, ! as per usual
+# loops
+x=1
+while x<100 then
+   x+=1 # x++ doesn't work
+end
+for y in 1..100 do
+   puts "#{y}"
+end
+# iteration through arrays
+array = [10,20,30]
+array.each do |i|
+   puts "#{i}"
+end
+# quickly create array a to iterate
+(17..204).each do |i|
+   puts "#{i}"
+end
+# function
+def myfunc(p1,p2,p3)
+   puts p1,p2,p3
+end
+#+END_SRC
 ** code generation
 - easiest start
   - the program being produced has a relatively fixed known structure
@@ -610,6 +621,7 @@ const int elements = sizeof (array) / sizeof(int);
 - 
 * 2018-02-09 more C++ template expansion
 ** example 1
+#+BEGIN_SRC C++
 #include <iostream>
 using namespace std;
 
@@ -630,6 +642,7 @@ int main(){
    const int Value = Factorial<5>::Result;
    //cout << Value << endl;
 }
+#+END_SRC
 ** loop unwinding
 - we can write a template-based loop (or recursion) that will force the compiler to unwind it
 - create generalized repeat class for the general case of our 'loop' and specialized for base case
@@ -752,4 +765,3 @@ comment #->  code    ->"" doublequoted string
            slash pattern
           (watch for \/)
 #+END_SRC
-
