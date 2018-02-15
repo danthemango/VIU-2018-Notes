@@ -227,6 +227,10 @@ Here are some commands I've found helpful:
 | M-x lisp-mode | use lisp-mode                          |
 | M-:           | evaluate lisp expression in minibuffer |
 | C-x C-e       | evaluate lisp expression before cursor |
+** Running emacs commands from the command line
+- running `emacs --batch -f command` will run an emacs command without necessarily opening emacs
+- (append --kill in case it is a command which does not quit on its own)
+  - e.g. I use the following command to compile an org-mode file to html: `emacs myfile.org --batch -f org-html-export-to-html`
 ** Other
 - emacs tutorials can be found at https://www.youtube.com/playlist?list=PLxj9UAX4Em-IiOfvF2Qs742LxEK4owSkr
 - and at http://zoo.cs.yale.edu/classes/cs210/help/emacs.html
