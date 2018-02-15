@@ -1,4 +1,4 @@
-#+OPTIONS: toc:2
+#+OPTIONS: toc:2a
 Metaprogramming http://csci.viu.ca/~wesselsd/courses/csci485/
 * 2018-01-10
 - program modifying programs
@@ -234,6 +234,7 @@ source code         --> tokenizer code -> token list ((keyword, "void"),(integer
     - '*' means '0 or more'
 ** Token descriptions
 - program can be composed of a bunch of logical / abstract components and actual tokens, composed of other parts
+#+BEGIN_EXAMPLE
                       /-> variable -> identifier
 Assignment statement -+-> assignent operator (=, +=, *=, ...)
                       \-> expression -> ...
@@ -265,6 +266,7 @@ Op -> "*"
    -> "+"
    -> "-"
    -> "/"
+#+END_EXAMPLE
 
 ** example
 x = 3 * 17 + y - Q
