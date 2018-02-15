@@ -1,3 +1,4 @@
+#+OPTIONS: toc:2
 Metaprogramming http://csci.viu.ca/~wesselsd/courses/csci485/
 * 2018-01-10
 - program modifying programs
@@ -493,15 +494,17 @@ MainRoutine -> keyword:'main' ParamList Body
 - #endif
 *** built in patterns
 - __FILE__, __LINE__, __DATE__, __VERSION__, __TIME__
-- #define swap(dtype,x,y) {dtype tmp; tmp = x; x = y; y = tmp;}
-  - swap(int,a,b) will become {int tmp; tmp = a; a = b; b = tmp;}
-- note: anything with '//' will have the comment included in the macro
+#+BEGIN_SRC C++
+#define swap(dtype,x,y) {dtype tmp; tmp = x; x = y; y = tmp;}
+swap(int,a,b) // will become {int tmp; tmp = a; a = b; b = tmp;}
+#+END_SRC
+- note: anything with '//' will have the comment included in the macro, so be careful about including that
 - #define will replace everything until the end of a line (use '/' to extend a 'line' across multiple lines in your file)
 - use 'gcc myprog.c -E' to print out preprocessed source code
 *** ternary operator
 - returns a value given a boolean expression
-- int x = y == 6 ? 5 : 4;
-- y = (x = 3, printf("x is %d", x), x++);
+- `int x = y == 6 ? 5 : 4;`
+- src_<C++>{y = (x = 3, printf("x is %d", x), x++);}
   - since 'x++' returns 3, y is 3
 * 2018-02-07 C preproc and C++ templating
 ** Questions

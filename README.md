@@ -1,2 +1,2 @@
 # School
-Code used for some school work but not part of major projects
+- used to store some minor-ish school projects and school notes

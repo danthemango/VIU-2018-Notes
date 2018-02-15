@@ -1,0 +1,235 @@
+#+EXPORT_FILE_NAME: ../md/emacs
+#+TITLE: Emacs
+* EMACS
+- https://www.gnu.org/software/emacs/tour/ has a good overview of emacs capabilities
+- to start emacs just type 'emacs' in the command line
+  - use 'emacs (filename)' to immediately open a file called (filename)
+  - use 'emacs (filename) &' to open emacs with a file and send to background
+    - (background means not taking over the terminal window)
+    - Note: do not use '&' via ssh
+- special keys and key modifiers:
+| Symbol        | Meaning                     |
+|---------------+-----------------------------|
+| C-            | Control-                    |
+| M-            | Alt- (or 'Meta-' or 'Esc-') |
+| (RET)         | Enter / Return              |
+| (BS) or (DEL) | Backspace                   |
+| (delete)      | Delete key                  |
+| (SPC)         | Spacebar                    |
+| (TAB)         | Tab key                     |
+| (cmd)         | A named command             |
+- note: many commands require multiple sequences of keys, which may require you to let go of control/alt to finish the sequence. For example:
+    - 'C-x C-b' means "Control and x, then control and b"
+    - 'C-x b' which  means "control and x, then just b"
+
+** Basics
+| C-g 	          | cancel command                       |
+| C-x C-f          | open file                            |
+| C-x C-s		    | save file                            |
+| C-x C-w		    | save as ..                           |
+| C-x C-c		    | close emacs                          |
+| C-/       		 | undo                                 |
+| C-g C-/          | redo [1]                             |
+| C-(SPC)          | start / end selection [2]            |
+| M-w              | copy selection                       |
+| C-w              | cut selection (i.e. copy and delete) |
+| C-y              | paste                                |
+| C-x b            | switch to buffer [3]                 |
+| C-x k            | kill a buffer                        |
+| C-x C-b          | list buffers                         |
+- [1] C-/ becomes 'redo again' and C-g C-/ becomes 'undo after redo'
+- [2] or just drag with the mouse             
+- [3] 'buffer' means 'opened file'
+- use 'M-x xterm-mouse-mode' to turn on the mouse via ssh
+- use 'M-x tetris' to start playing tetris 
+
+** Movement
+| C-a / C-e       | move to start / end of line                               |
+| C-p / C-n       | move to previous / next line (i.e. up/down)               |
+| C-b / C-f       | move back / forward one letter                            |
+| M-b / M-f       | move back / forward one word                              |
+| M-v / C-v       | move up / down one screenful                              |
+| M-< / M->       | move to start / end of file                               |
+| C-s             | search (type in prompt) / go to next result               |
+| C-r             | backwards search (type in prompt) / go to previous result |
+| M-C-s           | search (regular exression)                                |
+| (backspace)     | delete a letter-backwards                                 |
+| C-d             | delete a letter-forwards                                  |
+| C-(backspace)   | delete a word-backwards                                   |
+| C-(delete)      | delete a word-forwards                                    |
+| C-k             | delete everything right of cursor                         |
+| C-S-(backspace) | delete entire line (same as C-a C-k C-k)                  |
+| (F3)            | begin recording keyboard macro sequence                   |
+| (F4)            | finish recording macro / play macro                       |
+| C-u [N] (cmd)   | repeat command (cmd) [N] times                            |
+| C-o             | insert line before                                        |
+| M-g M-g         | goto line #                                               |
+| C-M-v           | scroll down unselected window (e.g. a help window)        |
+| C-M-S-v         | scroll up unselected window                               |
+
+** Help
+| C-h ?        | describe the quick help system            |
+| C-h i        | open 'info' (program manuals in linux)    |
+| C-h r        | open emacs manual                         |
+| C-h b        | list all keybindings                      |
+| C-h m        | describe current minor mode               |
+| C-h c        | describe a keybinding                     |
+| C-h k        | explain a keybinding                      |
+| C-h f        | explain function (the ones used with M-x) |
+| C-h v        | check the state of a variable             |
+| (prefix) C-h | describe the uses of (prefix) (e.g. C-x 8 C-h) |
+
+** Window commands
+you can quickly edit multiple files at once by splitting the current emacs session into multiple frames:
+| C-x 0 | close current frame      |
+| C-x 1 | close all other frames   |
+| C-x 2 | create horizontal frame  |
+| C-x 3 | create vertical frame    |
+| C-x o | switch to 'other' window |
+- note: use C-(up and C-(down) to cycle through the history of commands in that case
+
+** Extras
+| C-x (TAB) | indent/dedent entire region                |
+| M-y       | cycle through previous yanks (after paste) |
+
+** Org mode
+- org mode is great for note taking, checklists and project management
+- use 'M-x org-mode' to enter org mode, or just open a file named (filename).org
+- use '\*' to indicate a header, and include '\*\*' to make a subheader
+- use '- [ ] item' to create a checklist item called 'item'
+- use '[/]' on the header to keep track of items used in sublist
+| (TAB)             | expand/contract elements in subheading              |
+| S-(TAB)           | expand/contract every heading                       |
+| C-c C-n / C-c C-p | jump to next / previous heading                     |
+| C-c C-f / C-c C-b | jump to next / previous heading at same level       |
+| C-c C-u           | jump 'up' heading (higher level)                    |
+| S-(down) / S-(up) | jump to next / previous line item                   |
+| M-(Ret)           | insert new heading / item                           |
+| M-S-(RET)         | insert new checklist item                           |
+| C-c ^             | sort list                                           |
+| C-c C-c           | mark item in list as sorted                         |
+| C-c C-e           | export notes (e.g. use 'h h' to export to html) [1] |
+1. go to 'M-x customize-option org-export-backends' to get a list of possible export options
+*** org-tables
+- for more info: http://orgmode.org/guide/Tables.html
+- emacs org mode has some amazing support for creating and maintaining tables in notes
+- to create a table, simply start subdividing sections of text between '|' characters
+| command         | description                                   |
+|-----------------+-----------------------------------------------|
+| C-u 2 C-c       | create table, columns separated by two spaces |
+| (TAB)           | move to next cell                             |
+| S-(TAB)         | move to previous cell                         |
+| M-(direction)   | move row / column in (direction)              |
+| M-S-(direction) | insert now row / column in table              |
+| S-(RET)         | increment previous value in below row         |
+
+*** org-mode templates
+- https://orgmode.org/manual/Easy-templates.html
+- use #+BEGIN_SRC C++ and #+END_SRC to get nicely-formatted code segments
+- use '<s tab' to quickly insert code-block segment
+*** org-mode exporting
+- http://orgmode.org/manual/Export-settings.html#Export-settings
+- org-mode formatted files can be exported in pdf, html, md, and other formats
+** Bookmarks
+| C-x r m | mark bookmark          |
+| C-x r b | jump to named bookmark |
+| C-x r l | list all bookmarks     |
+
+** Named commands
+Basic usage of named commands:
+| Keys      | description             |
+|-----------+-------------------------|
+| M-x (cmd) | run named command       |
+| M-x (TAB) | list all named commands |
+| C-h f     | help with named command |
+
+Here are some commands I've found helpful:
+| M-x command             | description                                                   |
+|-------------------------+---------------------------------------------------------------|
+| apropos                 | search for command by name                                    |
+| tetris                  | play tetris                                                   |
+| customize               | turn on/off any settings in emacs [1]                         |
+| customize-option        | change variables in any emacs groups                          |
+| customize-themes        | change the look of emacs                                      |
+| term                    | opens up a terminal [2]                                       |
+| shell                   | opens up a shell                                              |
+| eshell                  | opens up an emacs shell [3]                                   |
+| info                    | emacs (and linux) manuals                                     |
+| man                     | opens up a man page (as opposed to info mode)                 |
+| toggle-truncate-lines   | word-wrapping                                                 |
+| desktop-save            | save the current emacs session [4]                            |
+| package-list-packages   | open menu for other addons to get for emacs [5]               |
+| set-variable            | set emacs variable                                            |
+| rectangle-mark-mode     | select a rectangle selection                                  |
+| string-insert-rectangle | insert text in rectangle selection                            |
+| clean-buffer-list       | remove buffers                                                |
+| ido-mode                | list buffers during a change of buffer (C-f disables it temp) |
+| uniquify                | gives unique name to non-uniquely named buffers               |
+| occur                   | list all occurances in buffers                                |
+| find-dired              | searches for file with a given name                           |
+| locate                  | locate command                                                |
+| compile                 | compile program                                               |
+1. customizations are installed to ~/.emacs.d/ and loaded via ~/.emacs
+2. from with 'term' you need to use other buttons to move around:
+  - use 'C-c b' to switch buffers rather than the standard 'C-x b'
+  - use 'C-c C-c' to cancel program execution rather than the standard 'C-c'
+- will not do multiple terminals, consider installing multi-term
+3.  almost a regular shell, but also accepts emacs commands (and lisp) 
+  - e.g. (+ 2 2)
+4.  use 'emacs -f desktop-read' to open it with that previous session 
+5.  melpa is a package which expands this list
+6.  use 'C-h v' to check the state of an emacs variable
+
+** Dir mode
+- dir mode is used in an opened directory
+- e.g.: use C-x C-f ~ (RET) to open the home directory
+| key       | description                  |
+|-----------+------------------------------|
+| n / p     | move down / up               |
+| f / (RET) | open file or directory       |
+| h         | help                         |
+| ?         | quick help                   |
+| ^         | go up directory              |
+| +         | create new directory         |
+| h         | help with dired mode         |
+| q         | quit mode                    |
+| shift+c   | copy file                    |
+| shift+a   | grep (search through) files  |
+| shift+r   | rename file                  |
+| s         | re-sort files                |
+| m         | mark file                    |
+| !         | run shell command on file(s) |
+| d         | mark for deletion            |
+| x         | (execute) run deletion       |
+| u         | unmark                       |
+
+** Packages I've installed
+- melpa
+  - provides extra packages
+- nyan-cat 
+  - novelty scroll-bar (M-x nyan-mode)
+- server-mode
+  - automatically start emacs server mode with a call to 'emacsclient'
+- base16-monokai
+  - looks great for most modes
+  - set via M-x customize-themes
+- jekyll-modes
+  - (just playing with it) quickly edit jekyll
+- octopress
+  - (just playing with it) quickly edit octopress files
+- dired-details.el
+  - dired-hide-details-mode
+  - hides the details from directories in dired mode (toggle with '(')
+
+** Lisp
+| command       | description                            |
+|---------------+----------------------------------------|
+| M-x lisp-mode | use lisp-mode                          |
+| M-:           | evaluate lisp expression in minibuffer |
+| C-x C-e       | evaluate lisp expression before cursor |
+** Other
+- emacs tutorials can be found at https://www.youtube.com/playlist?list=PLxj9UAX4Em-IiOfvF2Qs742LxEK4owSkr
+- and at http://zoo.cs.yale.edu/classes/cs210/help/emacs.html
+- here are a few more commands I found useful
+
+ 
