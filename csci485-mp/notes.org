@@ -1,0 +1,750 @@
+Metaprogramming http://csci.viu.ca/~wesselsd/courses/csci485/
+* 2018-01-10
+- program modifying programs
+- metaprogramming is used to modify other programs (our itself)
+  - used in compilers, interpreters, debuggers, IDEs, code obfuscation, viruses
+  - (camouflage)
+  - this is a survey course
+  - second half of the course, lisp macros, higher order functions
+    - (not trivial)
+- basic translation application
+  - assemblers: reading assembly language, producing object code
+  - compilers: reading high level language, producing object code
+  - you need to keep track of complex information about a program as it is compiled
+    - using metadata associated with programs
+  - interpreters: reading instructions / statements and producing whatever is going to execute them
+  - translation / migration code:
+    - automating translation of code from a language to another
+- code generation
+  - writing code to generate scripts for
+    - doing installs / generating makefiles
+    - configure db/software
+  - writing code that generates query code
+    - user supplies options, program then generates query code segment
+  - templates / skeletons
+    - user says they want to create a project / class, which is generated
+    - name completion as you type, it looks for appropriate methods, objects, variables
+  - using metaprogramming as a way to extend a language (e.g. lisp)
+    - I add features to my source code, which now look to be part of the language
+  - Higher order functions & closures
+    - higher order function treats functions as data
+    - function which writes a customized version of another function
+    - have our program write new functions as it runs & use them later
+  - self modifying code
+    - e.g. code that modifies itself at runtime for efficiency
+    - to avoid detection (viruses, secrecy)
+    - code that chooses / replaces which components to use
+    - what happens at code level & architectural level
+* 2018-01-12 assembler examples
+- we're going to be looking at how a compiler can read and interpret source code
+- Toy assembly language:
+  - list machine instructions
+  - map assembly language to machine code
+  - consider enhancements
+** machine instructions
+  - 16-bit processor
+  - 6 general purpose registers
+  - instruction format: 3 or 4 bits describe operation type, remaining bits specify the options/operands
+  - set upper/lower 8 bits in a register
+       (0 for lower, 1 for upper)
+         8 bits for value
+                   4 bits for reg
+  - 001- ---- ---- ----
+  - add contents of one reg to another
+       signed/unsigned (0/1)
+              src reg (4 bits)
+                   dest reg (4 bits)
+    010- 0000 ---- ----
+  - shift bits in a register left or right
+        left/right (0/1)
+          signed/unsigned (0/1)
+                amount to shift
+                     reg
+    011 - - 000 ---- ----
+  - negate contents of register
+        signed/unsigned (0/1)
+                   reg
+    100 - 00000000 ----
+  - load contents to/from memory
+        to/from (0/1)
+               reg to/from reg
+    101 - 0000 ---- ----
+  - branch based on condition in a register, jump to address in other register
+        unconditional, neg, zero, pos (00,01,10,11)
+               data/test register
+                    address register
+    110 -- 000 ---- ----
+  - copy contents of one register to another
+              src, dst
+    111 00000 ---- ----
+** assembly instructions
+- // for comments (ends and endl)
+- blank lines allowed, at least one whitespace before/after mneumonics
+- whitespace optional around operands
+- SETH val, R#
+- SETL val, R#
+- ADDS R1,R2
+- ADDU R1,R2
+- SHIFTLU
+- SHIFTLS
+- SHIFTRU
+- SHIFTRS
+- NEGU R#
+- NEGS R#
+- LOADT R1, R2
+- LOADF R1, R2
+- BRU
+- BRN R1,R2
+- BRS
+- BRP
+- COPY
+PC - R15
+SP - R14
+ASM - R13
+** assembly examples
+- SETH 126,0 
+- SETL 200,0
+- LOADF 1,0
+- SETH 0,2
+- SETL 40,2
+- ADDS 2,1
+- LOADT 1,0
+** assembler
+*** step 1
+- standardize from before assembly
+  - strip blank lines and comments
+  - one instruction per line
+  - one space following mneumonic
+  - no other whitespace
+*** higher level mneumonics
+**** subtraction
+- SUBS R1, R2
+  - COPY R1, R13
+  - NEGS R13
+  - ADDS R13, R2
+**** 16-bit set
+- SET 16bit, R
+  - SETH H8bit, R
+  - SETL L8bit, R
+**** offset mode for addressing
+- LOADF R1, offset(R2)
+  - SET offset, R13
+  - ADDS R2, R13
+  - LOADF R1, R13
+**** labelled sections
+- FOO:
+  - ...
+  - ...
+  - BRU R1, FOO
+*** about assemblers
+- two passes through program
+  - 1:
+    - strip comments
+    - standardize whitespace
+    - apply any definitions or macros
+      - (e.g. higher level instructions)
+    - tokenize
+      - mneumonic, op1, comma, op2, etc
+      - identify the distinct text elements of each instruction
+    - syntax checking, catch invalid instructions
+    - calculate offsets, build symbol table
+      - for any name/label used in the code, replace with value (e.g. offset/address)
+    - data about the code being translated or generated is our metadata
+  - 2:
+    - generate the machine code (not too difficult, there is a 1:1 correspondence of assembly to machine code)
+    
+** compiler
+- translating HLL to object code
+  - problem, the constructs do not match 1:1 to each other (unlike assembly)
+
+e.g.: C++:
+class H: private T{
+- fields and method definitions
+}
+
+*** 1st:
+  - need an understanding of the HLL
+    - exact specification of what it is supposed to do
+    - we have different compilers, profilers, debuggers, IDE's, testers working on the same source code
+      - they must all have a common understanding of what a construct means
+  - common approach:
+    - set of grammar rules defining syntax with enough extra info to remove ambiguity
+      - specify hierarchy of language constructs
+      - specify constructs, like:
+        - type compatibility
+        - declaration sequences
+        - scoping rules
+    - multipass process
+      - preprocessing
+      - front end translation:
+        - do the words/symbols fit a valid pattern for a language?
+        - semantic analysis:
+          - does it meet all the requirements of validity?
+        - build an intermediary representation of the program
+      - optimizations
+        - clean up platform independent issues
+      - platform dependent optimizations
+        - code generation
+  - language representation
+    - some set of rules which define what is valid in a language
+    - CFG (Context Free Grammars)
+      - express programs & components in a language as a heirarchy of rules
+        - component -> subcomponent, subcomponent, subcomponent
+*** assignment statement
+- consider a grammer for assigning a value to a variable
+  - Assignment statement -> variable = expression
+  - Expression -> Value
+  - Expression -> Value Operator Expression
+  - Value -> Variable
+  - Value -> Number
+  - Number -> [0-9]+
+  - Variable -> [a-z]+
+  - Operator -> [+-*/]
+- is this a valid assignment statement?: foo = x + 324 * y
+  - con we apply these rules to build that expression
+* 2018-01-17
+** compiling design
+- a compiler is trying to transform one code from one language to another
+  - (e.g. source, interpreted, object code)
+regular expressions -\
+source code         --> tokenizer code -> token list ((keyword, "void"),(integer,317))
+- how to describe a compiler?
+  - we need a description of the source code language
+** tokenize the source code
+  - breaking pieces into the smallest logical units of the language
+    
+      void foo(int x, char y){
+         int a = x;
+         if(y == 'S') return q;
+         else return -q;
+      }
+
+- create a list of individual tokens, in order encountered
+  - categorize them as well
+  - e.g. identifier, keyword, delimiter, comment, ...
+- we need a set of rules for identifying valid token types, how they're composed
+- using Regex:
+  - integer: [0-9]+
+  - signed integer [+-]?[0-9]+
+    - '?' means '0 or 1', '+' means '1 or more'
+    - '-' means 'from (left) to (right)'
+  - keywords: void, int, float
+  - identifier: [_a-zA-Z][0-9a-zA-Z_]*
+    - '*' means '0 or more'
+** Token descriptions
+- program can be composed of a bunch of logical / abstract components and actual tokens, composed of other parts
+                      /-> variable -> identifier
+Assignment statement -+-> assignent operator (=, +=, *=, ...)
+                      \-> expression -> ...
+expression -> value
+expression -> value operator value
+expression -> (expression)
+
+value -> variable
+value -> integer
+value -> float
+
+Assignment statement -> Variable AssignOp Expression
+Variable -> Identifier
+AssignOp -> PlainOp
+AssignOp -> CompoundOp
+PlainOp -> "="
+CompoundOp -> "+="
+CompoundOp -> "-="
+CompoundOp -> "*="
+CompoundOp -> "/="
+...
+Expression -> Value
+Expression -> Value Op Expression
+Value -> Variable
+      -> Number
+Number -> Integer
+       -> Float
+Op -> "*"
+   -> "+"
+   -> "-"
+   -> "/"
+
+** example
+x = 3 * 17 + y - Q
+(identifier, x)
+(assignop, =)
+(integer 3)
+(op, *)
+(integer, 17)
+(op, +)
+(identifier, y)
+(op, -)
+(identifier, Q)
+
+- How can you interpret this?
+
+                    /-> Variable -> Identifier -> "x"
+AssignmentStatement +-> AssignOp -> AssignOp -> PlainOp -> "="
+                    \-> Expression
+                        \-> Value.Op.Expression
+                             \     \   \
+                            Number "*" Value...Op.Expression
+                             \Int      \-Number \+  \Value......Op....Expression
+                              \3         \-Int      \Variable   \"-"  \Value
+                                           \-17     \Identifier       \Identifier
+                                                    \y                \Q
+
+** remaining tokens
+Program -> GlobalDefinitions MainRoutine
+GlobalDefinitions -> FunctionDef
+                  -> GlobalVarDef
+                  -> TypeDef
+MainRoutine -> keyword:'main' ParamList Body
+
+** Augmented Grammar Rules
+- var must be previously declared (type given in declaration)
+- assignop must be type-compatible with the var
+- assignop must be type-compatible with the expr
+
+- we can now turn around and use the grammatical rules to generate
+- ambiguous meanings (multiple interpretation)
+- how to uncover a possible interpretation
+- do we mix/match every possible interpretation?
+
+** code translation process
+1. stardardize code format (strip whitespace, strip comments?)
+2. apply any preprocessing (any modifications before translation process)
+3. tokenize: scan source code, determine the list of token types/vals
+4. parse: does it form a valid program structurally?
+   - syntactic analysis (type compatibility, variable declarations, etc)
+   - semantic analysis -> what does it actually mean?
+5. optimizations
+   - eliminate unreachible code
+   - replace function calls with expressions (if possible)
+   - precompute constant expressions
+   - can we move fixed computations out of loops
+   - can we unwind loops with fixed iterations
+   - produce platform independent representation of compiled code
+6. generate translated code
+   - including machine-specific optimizations
+   - (registers, memory)
+
+** custom compilation tools
+- tokenizing, parsing, code generation
+*** tokenizer generator
+- e.g. lex, flex
+- a lot of the big languages will have their own setup to go straight to object code from source code
+  - sometimes it is faster and easier to generate C, C++ code which is equivalent to the code of our language
+  - there exist tools which will accept a grammar (regex and token rules) and create a custom interpreter
+  - produce lex.yy.c
+*** parser generator
+- e.g. yacc, bison
+- take in grammar rules for language structure + code generation functions
+- y.__.c
+*** lex input
+- describe regular expressions for tokens in language, how to identify token type for each, some basic editing / substitution of code provided
+- there are three segments of code in yacc, which is separated by a line of only '%%'
+  1. basic definitions
+     - define which chars are digits,hex, alpha, alphanum, oct, int
+  2. rules (if you see x add y to token list
+     - pattern (regex), C code
+  3. c functions to be used by the rules in sec. 2
+** next week
+- code generation with Ruby
+* 2018-01-19 (Ruby and code generation)
+** Ruby
+  - new to Dave this year
+  - functional (like lisp), OO (smalltalk) scripting/libraries (perl)
+*** variables
+    - dynamically typed language
+    - Don't declare variables (implicitly declared)
+    - 1st letter of variable identifies its scope
+      - lowercase (or '_') for local scope
+      - start with '$' for global scope
+      - start with '@' for class instance variable
+      - start with '@@' for class-wide variables
+    - all other symbols can be alphanumeric and '_'
+    - constants begin with uppercase letter
+    - most operators are consistent with C, java, perl
+      - exception: '++', '--'
+      - literals
+        - integers (prefixes for bin, oct, dec, hex)
+        - fixed pt
+        - scientific notation
+        - "something" for literals (interpreted)
+        - 'something' for literals (not interpreted)
+          - except '\''
+        - '\n' for 
+
+*** operations
+- comparison operators
+  | ==     | same value               |
+  | eql?   | compatible and equal     |
+  | equal? | are they the same object |
+  - e.g. x.eql?(y), x.equal?(y)
+- puts "hello world"
+- puts " something #{x} something"
+**** if
+- if x < y then
+  - eee
+- elsif x < 2 then
+  - eee
+- else
+  - eee
+- end
+- logic ops: &&, ||, !
+**** loops
+- loops
+  - while x < y
+    - eee
+  - end
+- for x in 17..204 do
+  - work
+- end
+- array.each do |i|
+  - something
+- end
+- (17..204).each do |i|
+  - eee
+- end
+**** array
+- [10,20,30]
+**** function
+- def myfunc(p1,p2,p3)
+  - something
+- end
+** code generation
+- easiest start
+  - the program being produced has a relatively fixed known structure
+    - all we need is a certain number of options and choices to produce it
+  - create a program which installs an install script
+    - for software onto a user's machine
+    - requires input from the user
+    - produces install script, which the user runs
+*** script process
+- typical or custom (pick components)
+- where to install?
+- is this a reinstall
+  - backup old install?
+  - which user
+- system settings to worry about?
+- which files/folders
+- generator needs to be flexible enough to all of the desired script behaviour
+- 
+* Notes
+- first assignment is going to be like an ad-hoc metaprogramming
+* 2018-01-24 Itty Bitly program
+** token types
+[['variable','x'],['assignop','='],['integer','123'],...]
+- 'keyword'
+- 'assignop' =
+- 'compop' ==, <=, >=, <, >
+- 'mathop' + - * / %
+- 'bracket' ( )
+- 'delimiter' { }
+- 'quote' "
+- 'integer'
+- 'variable'
+- (take a look at tokenizer.rb)
+* 2018-02-02 Macro / preprocessor system
+** about macros
+- allows code to be transformed before it gets compiled / executed
+- (macro functions are not in the source code which is compiled / interpreted)
+** C preprocessor
+- runs just prior to compilation
+- #include "myfile" - copies the contents of 'myfile' in place of the #include
+- #define FOO something else - used instead of 'const', literally replaces every place of FOO with 'something else'
+- #define, #include, #ifdef, #ifndef, #endif, #undef, 
+*** example
+**** starting code
+- #define x y
+- #define y z
+- x = 3
+- y = 10
+- #define z x
+- x = 200
+**** after #define X Y
+- #define y z
+- y = 3
+- y = 10
+- #define z x 
+- y = 200
+**** after #define y z
+- z = 3
+- z = 10
+- #define z x 
+- z = 200
+**** after #define z x
+- z = 3
+- z = 10
+- x = 200
+*** ifdef / ifndef
+- #ifdef pattern
+- or #ifndef pattern
+  - code & preproc instructions
+- #else
+- #elif
+- #endif
+- great to ensure we do not re-include the same file twice
+*** idea for DEBUGS
+- #define DEBUGLEVEL 2
+- #if DEBUGLEVEL >= 0
+  - do something
+- #elif DEBUGLEVEL >= 1
+  - something else
+- #else
+  - least verbose
+- #endif
+*** built in patterns
+- __FILE__, __LINE__, __DATE__, __VERSION__, __TIME__
+- #define swap(dtype,x,y) {dtype tmp; tmp = x; x = y; y = tmp;}
+  - swap(int,a,b) will become {int tmp; tmp = a; a = b; b = tmp;}
+- note: anything with '//' will have the comment included in the macro
+- #define will replace everything until the end of a line (use '/' to extend a 'line' across multiple lines in your file)
+- use 'gcc myprog.c -E' to print out preprocessed source code
+*** ternary operator
+- returns a value given a boolean expression
+- int x = y == 6 ? 5 : 4;
+- y = (x = 3, printf("x is %d", x), x++);
+  - since 'x++' returns 3, y is 3
+* 2018-02-07 C preproc and C++ templating
+** Questions
+- Is lab available for forking? No.
+- what if we declared sum1, sum2, sum3 in the reverse order
+- what about #define MYHEADER_H ? (no resolution)
+** C preprocessing
+- we used #define macros in C in assignment 2
+- #define foo(a,b,c) a + b * c - 2
+  - does the replacement of foo(1,2,3) with 1+2*3-2 as a textual replacement in the code
+- #define list(a,b,...) a + b __VA_ARGS__
+  - just shoves the optional arguments in there. E.g. list(1,2,3,4,5) becomes 1+2,3,4,5
+  - i.e. it just plugs in the list in-place
+- #define sum(...), we want a + b + c + d
+*** recursive macro?
+- #define sum(x) x
+- #define sum(x,...) x+sum(__VA_ARGS__)
+- No, recursive expansion is not supported
+- can't have multiple definitions for sum
+*** specific length recursive structures
+- support a specific version of sum for anything up to 4 parameters
+- #define sum1(x) x
+- #define sum2(x,...) x + sum1(__VA_ARGS__)
+- #define sum3(x,...) x + sum2(__VA_ARGS__)
+- #define sum4(x,...) x + sum3(__VA_ARGS__)
+**** expansion 
+- sum3(1,10,20) 
+  -> 1 + sum2(10,20)
+  -> 1 + 10 + sum1(20)
+  -> 1 + 10 + 20
+*** choosing macros based on the number of arguments
+- remember that '##' is used to combine arguments together
+  - e.g. x ## y => xy
+- so what about sum##count(__VA_ARGS__)?, should exand to sum1, sum2, or sum3 
+  - (assuming count(...) is a defined macro)
+- so then we could use
+  - #define callSum(count,...) sum##count(__VA_ARGS__)
+  - #define sum(...) callSum(CountParams(__VA_ARGS__),__VA_ARGS__)
+  - #define CountParams(...) Resolve(__VA_ARGS__,4,3,2,1)
+  - #define Resolve(_1,_2,_3,_4,N,...) N
+**** expansion
+- CountParams(10,20,30) -> Resolve(10,20,30,4,3,2,1) returns 3 (since __VA_ARGS__ had three elements)
+- sum(10,20,30) 
+  - callSum(CountParams(10,20,30),10,20,30)
+  - callSum(Resolve(10,20,30,4,3,2,1),10,20,30)
+  - callSum(3,10,20,30)
+  - sum3(10,20,30)
+  - 10 + sum2(20,30)
+  - 10 + 20 + sum1(30)
+  - 10 + 20 + 30
+*** what can we do at compile time?
+- #define substitutions
+- #if, #ifdef, #ifndef to select specific block to use and not
+  - e.g. multiple include protection
+  - and to do conditional #defines
+- replace constant expressions with fixed values
+- operators & const values
+- const int x = 3 * 10 + 20; // sets x to 50 at compile time
+  - does it replace the symbol x with 50 too?
+- const int y = x < 10 + 5 : 200; // sets y to 200 at compile time
+- const int array[] = {10,20,30,40}; // assigning 4 values to this constant array
+- // sizeof(arg) tells you the number of bytes that arg takes up in memory
+- const int numelements = sizeof (array) / sizeof(int); // provides number of ints in array
+*** example
+**** array.h
+- 10, 20, 30, 40, 50
+**** main.c
+const int array[] = {
+#include array.h
+};
+const int elements = sizeof (array) / sizeof(int);
+** C++ preprocessing
+- extends it through templates
+- original intent
+  - programmer provides template or skeletton for function or class when they need to, they specify a datatype they want to use with the template
+  - the compiler builds each source code version from the template
+- template<MYTYPE>
+  - {block} // MYTYPE in 'block' will be replaced by int or string or whatever
+*** Templates are Turing complete
+- kind of an accident
+- programmers can develop entire programs using only templates
+- i.e. you can run programs at compile time
+- basic compile-time computation on any constant data (data known at compile-time)
+- recursive compile-time computations
+- setting up loop/recursion unwinding at compile time
+- setting up if/else switches
+- set up functions with variable number of arguments in a type-safe way
+*** count the bits
+- const char c = 'x';
+- const int i = CountBits(x);
+**** runtime method
+- int countBits(char c){
+  - int count = 0;
+  - for(int i = 0; i < 8; i++){
+    - int mask = 1 << i; // 2^i in a quick and dirty way
+    - if(mark&c) count++;
+  - }
+  - return count;
+- }
+**** compiletime method
+- 
+* 2018-02-09 more C++ template expansion
+** example 1
+#include <iostream>
+using namespace std;
+
+template<int N>
+class Factorial{
+   public:
+      // enum{Result=(N<1)?0:N*Factorial<N-1>::Result
+      enum {Result=N*Factorial<N-1>::Result};
+};
+
+template<>
+class Factorial<1>{
+   public:
+      enum{Result=1};
+};
+
+int main(){
+   const int Value = Factorial<5>::Result;
+   //cout << Value << endl;
+}
+** loop unwinding
+- we can write a template-based loop (or recursion) that will force the compiler to unwind it
+- create generalized repeat class for the general case of our 'loop' and specialized for base case
+- note: static is used for class (as opposed to instance) method
+- note: inline mean that a function call is replaced by its implementation
+*** example
+#+BEGIN_SRC C++
+#include <cstdio>
+template<int RemainingN>
+class Repeat{
+   public:
+      static inline void Body(){
+         printf("Entering %d\n",RemainingN);
+         Repeat<RemainingN-1>::Body();
+         printf("leaving %d\n",RemainingN);
+      }
+};
+
+template<>
+class Repeat<1>{
+   public:
+      static inline void Body(){
+         printf("Last Call\n");
+      }
+};
+
+int main(){
+   Repeat<6>::Body();
+}
+#+END_SRC
+** variable arguments
+- write type-safe functions that take a variable number of arguments
+  - sum(1) = 1
+  - sum(3,4,5) = ?
+- write version with minimum number of parameters, then generalized version
+- provide generalized version
+  - 
+* 2018-02-14 string processing at compile time
+** announcements
+- assign3 posted
+- midterm wednesday
+** string processing at compile time
+- functions that run at compile time
+- operating on constant strings
+- frequency("blah blah blah",'a')
+- balanced("...(...(...(..)...(..(..)..)..)..)..")
+- constructor takes string literal
+  - stores address & length in fields
+  - (#stored chars, not including null ('\0'))
+- provides a length function & overloads the [] to give back the char at specific position
+  - overloads the * to give back the address
+*** the static program
+#+BEGIN_SRC C++
+class StringLit{
+   public:
+      template<unsigned int N> // N is # chars including '\0' in string literal
+      // constructor expects to get a constant character array, str, of size N
+      // assign ptr to string
+      constexpr StringLit(const char(&str)[N]):ptr(str),len(N-1)
+      {
+         // want compile time error if string is empty
+         static_assert(N>=1, "invalid str passed"); // compile time error if false
+      }
+      // operator overloading
+      constexpr char operator[](unsigned i) const{
+         return ptr[i];
+      }
+      // dereference overloading
+      // we say the return type after since it's ambiguous otherwise
+      constexpr const char* operator*(){
+         return ptr;
+      }
+      constexpr unsigned int length() const{
+         return len;
+      }
+   private:
+      unsigned int len;
+      const char* ptr;
+};
+
+// returns 0 if brackets are balanced
+// >0 if there are more ( than )
+// <0 if there are more ) than (
+constexpr int balanced(const StringLit str, int pos=0,int count=0)
+{
+   return pos == str.length() ? count :
+      str[pos] == '(' ? balanced(str,pos+1,count+1) :
+      str[pos] == ')' ? (cont < 1 ? -1 : balanced(str,pos+1,count-1)) :
+      balanced(str,pos+1,count);
+}
+
+// returns number of times char is found in str
+constexpr unsigned int frequency(const StringLit str, const char c, int pos=0, int count = 0)
+{
+   return pos == str.length() ? count :
+      str[pos] == c ? frequency(str,c,pos+1,count+1):
+      frequency(str,c,pos+1,count);
+}
+
+int main(){
+   StringLit str("blahblahblah");
+   const int len = str.length();
+   // can now use *str, str[pos], str.length()
+}
+#+END_SRC
+   
+** adding preprocessing to languages which do not support it
+- I want to use the features I want (e.g. x++, x-- in Ruby)
+- I write my ruby using my special features
+- I run my precprocessor to turn it into real ruby then run the result
+- go through code, char by char, look for pattern and replace it (finite state machine):
+#+BEGIN_SRC ditaa
+
+            (any char)
+              ^|      ->' singlequoted string
+              |v      <-' (except \')
+comment #->  code    ->"" doublequoted string 
+        #<-   ^|     <-"" (except \")
+              |v
+           slash pattern
+          (watch for \/)
+#+END_SRC
+
