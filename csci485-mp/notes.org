@@ -81,7 +81,7 @@ Metaprogramming http://csci.viu.ca/~wesselsd/courses/csci485/
     111 00000 ---- ----
 #+END_EXAMPLE
 ** assembly instructions
-- // for comments (ends and endl)
+- // for comments (ends with endl)
 - blank lines allowed, at least one whitespace before/after mneumonics
 - whitespace optional around operands
 - SETH val, R#
@@ -209,8 +209,10 @@ class H: private T{
 ** compiling design
 - a compiler is trying to transform one code from one language to another
   - (e.g. source, interpreted, object code)
+#+BEGIN_EXAMPLE
 regular expressions -\
 source code         --> tokenizer code -> token list ((keyword, "void"),(integer,317))
+#+END_EXAMPLE
 - how to describe a compiler?
   - we need a description of the source code language
 ** tokenize the source code
@@ -385,9 +387,7 @@ MainRoutine -> keyword:'main' ParamList Body
   | eql?   | compatible and equal     |
   | equal? | are they the same object |
   - e.g. x.eql?(y), x.equal?(y)
-- puts "hello world"
-- puts " something #{x} something"
-**** if
+**** example code
 #+BEGIN_SRC ruby
 puts "hello world"
 puts " something #{x} something"
@@ -423,7 +423,7 @@ def myfunc(p1,p2,p3)
 end
 #+END_SRC
 ** code generation
-- easiest start
+- we are going to be making a program which generates a printer-installer for lab1
   - the program being produced has a relatively fixed known structure
     - all we need is a certain number of options and choices to produce it
   - create a program which installs an install script
@@ -466,27 +466,35 @@ end
 - #define, #include, #ifdef, #ifndef, #endif, #undef, 
 *** example
 **** starting code
-- #define x y
-- #define y z
-- x = 3
-- y = 10
-- #define z x
-- x = 200
+#+BEGIN_SRC C++
+#define x y
+#define y z
+x = 3
+y = 10
+#define z x
+x = 200
+#+END_SRC
 **** after #define X Y
-- #define y z
-- y = 3
-- y = 10
-- #define z x 
-- y = 200
+#+BEGIN_SRC C++
+#define y z
+y = 3
+y = 10
+#define z x 
+y = 200
+#+END_SRC
 **** after #define y z
-- z = 3
-- z = 10
-- #define z x 
-- z = 200
+#+BEGIN_SRC C++
+z = 3
+z = 10
+#define z x 
+z = 200
+#+END_SRC
 **** after #define z x
-- z = 3
-- z = 10
-- x = 200
+#+BEGIN_SRC C++
+z = 3
+z = 10
+x = 200
+#+END_SRC
 *** ifdef / ifndef
 - #ifdef pattern
 - or #ifndef pattern
@@ -496,14 +504,17 @@ end
 - #endif
 - great to ensure we do not re-include the same file twice
 *** idea for DEBUGS
-- #define DEBUGLEVEL 2
-- #if DEBUGLEVEL >= 0
-  - do something
-- #elif DEBUGLEVEL >= 1
-  - something else
-- #else
-  - least verbose
-- #endif
+- choose what code to include based on debugging levels:
+#+BEGIN_SRC C++
+#define DEBUGLEVEL 2
+#if DEBUGLEVEL >= 0
+  //do something
+#elif DEBUGLEVEL >= 1
+  //something else
+#else
+  //least verbose
+#endif
+#+END_SRC
 *** built in patterns
 - __FILE__, __LINE__, __DATE__, __VERSION__, __TIME__
 #+BEGIN_SRC C++
@@ -515,8 +526,8 @@ swap(int,a,b) // will become {int tmp; tmp = a; a = b; b = tmp;}
 - use 'gcc myprog.c -E' to print out preprocessed source code
 *** ternary operator
 - returns a value given a boolean expression
-- `int x = y == 6 ? 5 : 4;`
-- src_<C++>{y = (x = 3, printf("x is %d", x), x++);}
+- e.g.: int x = y == 6 ? 5 : 4;
+- y = (x = 3, printf("x is %d", x), x++);
   - since 'x++' returns 3, y is 3
 * 2018-02-07 C preproc and C++ templating
 ** Questions
@@ -791,9 +802,158 @@ int main(){
             (any char)
               ^|      ->' singlequoted string
               |v      <-' (except \')
-comment #->  code    ->"" doublequoted string 
-        #<-   ^|     <-"" (except \")
+comment #->  code    ->" doublequoted string 
+        #<-   ^|     <-" (except \")
               |v
            slash pattern
           (watch for \/)
+#+END_SRC
+* 2018-02-16
+** Midterm
+*** about
+- open notes, books (no internet, computers, phones)
+- Best 4 out of 5 questions
+- covers anything we've done so far
+- 2 coding(ish) questions:
+  - C macros
+  - C++ templates
+  - Ruby, parsing/tokenizing IttyBitty
+    - implement modifications to grammar, checker, parser, tokenizer
+    - Dave will supply the IttyBitty specs and copy of code to modify
+- 3 discussion / essay style questions
+  - approaches to solving different problems
+  - issues that might arise
+*** topics
+- Compilers, Interpreters, Debuggers, etc.:
+  - grammars of languages
+  - use of parse trees, symbol tables
+  - code optimization
+    - const expressions
+    - loop / recursion unwinding
+      - (e.g., how to create a loop which is running a finite number of times)
+    - detecting / eliminating dead code
+    - restructuring loops to minimize branching
+- template-driven code generation
+  - based on user choices, generating code from a stock form / skeleton / template
+- Grammars (CFGs), regular expressions, uses in understanding / transforming code
+- Installing assign 1 type installer scripts
+- (Not lex, flex, yacc, bison)
+- Developing our own preprocessor for a language which doesn't have one
+#+BEGIN_SRC c++
+if(...){
+   something;
+   return;
+   somethingelse; // this should be thrown out
+}
+
+while (x < y){
+   something;
+}
+if(x>=y) goto DONE
+
+// optimized like this?:
+if(x>=y) goto DONE
+do{
+   something;
+}while(x<y);
+if(x>=y) goto p;
+#+END_SRC
+* 2018-02-21 Midterm day
+** question 1 itty bitty
+- add ruby code to the tokenizer to have it accept different bases for integers
+*** new rules
+- accept one of the following patterns as the following rule, which will be tokenized as the following
+  - b[0-1]+
+    - 'binary'
+  - o[0-7]+
+    - 'octal'
+  - d[0-9]+
+    - 'decimal'
+  - x[0-9a-f]+
+    - 'hexadecimal'
+*** answer
+#+BEGIN_SRC ruby
+when /^b[0-1]+$/
+   ttype = 'binary'
+when /^o[0-7]+$/
+   ttype = 'octal'
+when /^d[0-9]+$/
+   ttype = 'decimal'
+when /^x[0-9a-f]+$/
+   ttype = 'hexadecimal'
+#+END_SRC
+** question 2
+*** part 1
+- is using CMake metaprogramming?
+*** part 2
+- is developing the CMake software metaprogramming?
+** question 3
+- show pseudocode and describe how to translate the parse tree from Language 1 to Language 2
+*** Language 1
+#+BEGIN_EXAMPLE
+// if else sequence
+_IFELSESEQ  -> _IF _ELSEIFSEQ
+_IFELSESEQ  -> _IF
+// else sequence
+_ELSEIFSEQ  -> _ELSEIF _ELSEIFSEQ
+_ELSEIFSEQ  -> _ELSEIF
+_ELSEIFSEQ  -> _ELSE
+// terminals
+_IF         -> if _CONDITION _BLOCK
+_ELSEIF     -> elsif _CONDITION _BLOCK
+_ELSE       -> else _BLOCK
+// _CONDITION and _BLOCK left undefined
+#+END_EXAMPLE
+*** Language 2
+#+BEGIN_EXAMPLE
+_IFELSESEQ  -> (cond _CONDSEQ)
+_CONDSEQ    -> _CONDBLOCK _CONDSEQ
+_CONDSEQ    -> _CONDBLOCK
+_CONDBLOCK  -> (_CONDITION _BLOCK)
+#+END_EXAMPLE
+** question 4
+*** part 1
+#+BEGIN_SRC c++
+#define if(...) if(__VA_ARGS__) Block
+#define else else Block
+#define Block(...) { __VA_ARGS__ }
+
+if ( x < y ) ( a = 1; b = 0; )
+else ( a = 0; b = 1; )
+
+// parse #define if and else
+if ( x < y ) Block ( a = 1; b = 0; )
+else Block ( a = 0; b = 1; )
+// parse #define block
+if ( x < y ) { a = 1; b = 0; }
+else { a = 0; b = 1; }
+#+END_SRC
+*** part 2
+#+BEGIN_SRC c++
+#define if(...) if(__VA_ARGS__) Block
+#define else else Block
+#define Block(...) { __VA_ARGS__)
+
+if ( x < y ) a = 1; 
+else a = 0;
+
+// parse #define if and else
+if ( x < y ) Block a = 1; 
+else Block a = 0;
+#+END_SRC
+** question 5
+*** part 1
+*** part 2
+*** part 3
+- write a type-safe variadic templated C++ function which returns the minimum element in a list
+#+BEGIN_SRC C++
+template <typename T>
+T min(T x, T y){
+   return x < y ? x : y;
+}
+template <typename T, typename ... Args>
+T min(T x, Args ... args){
+   return min(x, min(args...));
+   // not return min(x, args...);
+}
 #+END_SRC
