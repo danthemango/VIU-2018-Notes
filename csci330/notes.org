@@ -1,0 +1,516 @@
+* 2018-01-10
+- We've worked in a number of programming languages, now it's time to talk about the theory of languages
+- guiding philosophies of language
+  - influence choice of language
+  - dialects? grammar?
+  - + choice of syntax
+  - How is it implemented? (compilers, interpreters, techniques)
+    - how would it look like in assembly code
+    - how can I emulate that effect in C++? (match features with effects)
+- First half of the course: Lisp
+  - a functional language (fairly different from any other language used)
+- Second half of course: language features implementations & impact
+- 1930's/40's
+  - theory of computation
+  - church / turing took different approaches
+  - Lambda Calculus / Turing Machine
+    - equivalent expressions of what you can compute
+  - Von Neuman Architecture
+    - based on the design of Turing Machines
+    - Memory / processor / secondary storage
+    - fetch / decode, execute cycle
+    - model at heart of modern processors
+    - most high-level languages are designed with this architecture in mind
+    - action sequences / instruction sequences updating variables in memory
+  - Lisp was developed in the 1950 based on the lambda calculus
+    - (list processing language)
+    - based on abstract machines as an underlying architecture
+    - (stack based architecture)
+    - e.g. Warren Abstract Machine (WAM)
+    - since lisp was not designed for VNA, it got a reputation for being slow
+    - got a resurgence in the late 90's, resulting in scheme, haskell
+  - Lisp: functional programming
+    - all computation is done through functions and parameters
+    - imperative language:
+#+BEGIN_SRC python
+      y = read()
+      x = 3y**2 + y
+      print(x)
+#+END_SRC
+    - lisp
+    - since each function is indpendent, I do not need to worry about any machine state, I can give a proof for why a function must work
+    - yahoo used lisp early on, phone systems used to use erlang
+- Actual lisp
+  - everything is a function, every statement is a function call
+    - (theoretrically)
+  - supports some imperative features from a programmer perspective
+    - can be implemented purely functionally interally
+  - we will use GNU Common Lisp (gcl)
+  - syntax: prefix notation (function parameters/operands (separated by spaces))
+  - e.g. (+ 1 2 3) or (sqrt (* x x))
+  - sqrt(x^2 + y^2)
+    - (sqrt (+ (* x x) (* y y)))
+    - t is true, nil is false
+    - (sqrt (read))
+    - (format t "hello")
+      - format t to return nothing, nil to return the string
+    - used '~A' to format strings)
+      - (format t "val you entered ~A" (read))
+    - there are global variables and functions
+      - (defvar x 32)
+      - not functionally pure
+      - (setf x "foo")
+      - lisp is dynamically typed
+        - no specific type associated with any variable or parameter
+      - types
+      - type with p at the end used to check the type of a variable
+        - e.g. (integerp x) is true if x is an integer
+        - realp, stringp, listp, functionp
+  - we're using gcl (/usr/bin/gcl)
+** helloworld.cl:
+#+BEGIN_SRC lisp
+#! /usr/bin/gcl -f
+(format t "hello world~%")
+#+END_SRC
+  - ~% are newlines
+  - (if test true-action false-action)
+    - e.g. (if (< x y) x y)
+* 2018-01-12
+- basic functions: +, -, *, /, mod
+- (incf A 5) will return A+5
+- (decf A 4) will return A-4
+- lisp is prefix based: (op args args)
+  - (format t "something ~A ~%" x)
+  - (read)
+    - will request a lisp construct (string, number, list) as interpreted
+  - (defvar x 17)
+  - (setf x 10)
+  - true, false: t and nil
+    - anything other than nil is true
+  - (if (< x y) x y)
+  - if second thing ommitted, return nil if false
+    - (if (< x y) x)
+- binary functions
+  - logand	This returns the bit-wise logical AND of its arguments. If no argument is given, then the result is -1, which is an identity for this operation.	(logand a b)) will give 12
+  - logior	This returns the bit-wise logical INCLUSIVE OR of its arguments. If no argument is given, then the result is zero, which is an identity for this operation.	(logior a b) will give 61
+  - logxor	This returns the bit-wise logical EXCLUSIVE OR of its arguments. If no argument is given, then the result is zero, which is an identity for this operation.	(logxor a b) will give 49
+  - lognor	This returns the bit-wise NOT of its arguments. If no argument is given, then the result is -1, which is an identity for this operation.	(lognor a b) will give -62,
+  - logeqv	This returns the bit-wise logical EQUIVALENCE (also known as exclusive nor) of its arguments. If no argument is given, then the result is -1, which is an identity for this operation.	(logeqv a b) will give -50
+- comparisons
+  - (cond var var)
+  - <=, <, >=, >, =, \=,
+    min, max
+  - equalp (if equivalent values)
+  - eql (same type and value)
+    - e.g. (eql 1 "1") is nil
+  - eq (if they are the same object)
+- arithmetic
+  - (+ 2 2) returns 4
+  - (- 3 1) returns 2
+- get the smalest of x,y,z:
+  - (if (< x y) (if (< x z) x z)
+                (if (< y z) y z)
+- nicer elifs: cond
+   (cond 
+      (condition val)
+      (condition val)
+      ...
+      (t val))
+- goes through and returns the first val with true condition
+  - (t for default or 'else')
+- x,y,z: display an err message and return nil for non-numeric
+  - if all numeric, return the smallest:
+#+BEGIN_SRC lisp
+(cond
+  ((not (numberp x)) (format t "NAN"))
+  ((not (numberp y)) (format t "NAN"))
+  ((not (numberp z)) (format t "NAN"))
+  ((and (<= x y) (<= x z)) x)
+  ((<= y z) y)
+  (t z))
+#+END_SRC
+- use (not condition) to return the opposite of the condition val
+- use (and cond cond) to return true if both are true
+- use (or cond cond) to ...
+  - ; create function min3 which returns the smallest of three parameters
+#+BEGIN_SRC lisp
+(defun min3 (x y z)
+   (rest of functinon)
+)
+(defun promptAndRead (promptMsg)
+  (format t "~A~%" promptMsg)
+  (read) ; returns what the user entered
+)
+#+END_SRC
+- lisp has lists: (val val val val)
+  - but what if val is a function? (function val val val)
+    which will evaluate the function
+  - put a quote in front '(val val val val)
+  - (car list) ; returns front element of list (content address register)
+  - (cdr list) ; the rest of the list (content decrement register)
+    - (car '()) or (cdr '()) will crash
+- (const val1 '(val val val)) ; returns a new list with val1 appended at the front
+- (append '(1 2 3) '(4 5 6))
+  - returns '(1 2 3 4 5 6)
+* 2018-01-17
+- #\Q is the character 'Q'
+* 2018-01-24
+** scope in lisp
+- global variables
+- variables local to a function
+- variables local to a loop
+*** dynamic scope
+- function f calls function g calls function h
+  - if h uses a variable 'x', it will use the very closest one it can find in f, g, h, or global
+- not the default in lisp
+  - (declare (special x))
+** higher order functions
+- functions which take other functions as parameters:
+  - e.g. (sort comparefunc ListOfValues
+    - e.g. (sort '< '(1 2 3))
+  - comparefunc takes two arguments, and returns:
+    - 1 if a1 < a2
+    - 0 if a1 == a2
+    - -1 if a1 > a2
+  - need to use 'eval' to run functions given as a parameter
+    - e.g. (eval '(* x x)), requires the function to be the first thing in the list
+(defun runthis (f L)
+   (cond
+      ((not (functionp f)) nil)
+      ((not (listp L)) nil)
+      (t (eval (cons f L)))))
+- NOTE: cons creates a list with f appended to the front of L
+- (funcall '+ 1 2)
+- (apply function arglist)
+- (apply '+ '(1 2)) ;; essentially the same as runthis
+- note: functions are basically just lists
+  - to pass the function implementation use #'f
+- (map 'list 'f (1 10 100) (2 20 200) (100 200 300))))
+  - returns a list of running f on each of these parameter lists
+- (mapcar 'f '(1 2 3 4))
+  - returns a list of running f on each element in the list
+* 2018-01-26 scoping laws with Ben
+Lambda functions/Anonymous Functions:
+#+BEGIN_SRC lisp
+(lambda (x y z)
+     (* x (- y z))
+)
+
+#+END_SRC
+- This type of lambda function definition can be assigned to variables (via setf), or fed into a higher level function directly.
+- When you want to see the implementation of a function, you can do (function f) or #'f and Lisp will return a lambda function with the implementation.
+** Other uses...
+- We can use it to build functions that can create custom variants of other functions (closures), Example:
+#+BEGIN_SRC lisp
+(defun buildIncr (N)
+     (cond
+         ((not (integerp N)) nil)
+         (t #'(lambda (x) (+ x N))) ; return a custom incrementing function
+     )
+)
+#+END_SRC
+- Note: This is useful so long as the custom version is used often enough and is simple enough to justify its construction.
+- Can be used to create "temporary" functions that are in a local scope that work with local variables. Works like methods within an object, local computation scope for clearer design, Example:
+#+BEGIN_SRC lisp
+(defun f (x y)
+     (let ((a 1) (b 10) (mylocalf (lambda (m n)
+              (+ (- a m) (* b n))
+         )))
+         (cond
+              ((and (integerp x) (integerp y)) (funcall mylocalf x y))
+              (t (funcall mylocalf 0 0))
+         )
+     )
+)
+#+END_SRC
+- Note: We cannot do a recursive call to a lambda function that is defined via the let function. Instead, we use label blocks, which is a similar idea to let blocks but for local functions specifically and does allow recursive calls. Example:
+#+BEGIN_SRC lisp
+(defun f (a b c)
+     (let
+         ( ;local variables
+              (m 1)
+              (n 2)
+         )
+         (label ( ;local functions
+              (f1 (i j k) ...some function body...)
+              (f2 (x y z) ...some function body...)
+         ))
+     )
+)
+#+END_SRC
+* 2018-01-31 let over lambda
+** news and questions
+- news: lab 1 sample solutions posted
+- you should post the lab1 solution in the announcements page
+- note: nil IS '()
+** let over lambda
+- function containing a let block and returning a lambda function which can access variables in the let block
+- want to be able to
+  - (defvar mystack (stack)) ;; create a 'stack' that my variable accesses
+  - (funcall mystack 'push 3) ;; push value 3 onto stack
+  - (defvar x (funcall mystack 'top)) ;; get a copy of top element
+- note that 'mystack' is actually a function accessing hidden internal data & we're telling it what data to use
+- 'empty ;; test if stack is empty
+- 'pop ;; remove the top element
+** stack implementation
+#+BEGIN_SRC lisp
+(defun Stack ()
+   (let ;; start stack as empty
+     ((S nil)) ;; S is the hidden stack data
+     ; build and return the lambda function that accesses S
+     (lambda (cmd &optional (value nil))) ;; when called, expect the command and maybe data value
+     ;; check the command, and apply
+     (case cmd
+            ('push (setf S (cons value S)))
+            ('empty (null S))
+            ('top (if (null S) (format t "Err: top called on empty stack~%") (car S)))
+            ('pop (if (null S) (format t "Err: pop called on empty stack~%" (setf S (cdr S))))
+             (t (format t "Err: bad command~A~%" cmd))))))
+#+END_SRC
+** issues with how this works
+- this violates our usual concept of a function call works (push params and locals on computer stack when called, pop in return)
+- however, lisp creates stack in heap
+  - for any sublists, lisp creates more memory in heap
+  - after the last reference to a list (e.g. changed any variables which refer to it), the memory is removed
+    - (i.e. automated garbage collection)
+  - (let (list of variables) ;; <- this is a list
+  - so, even though variables are supposed to die after the end of a function, since we have references to 'S' in our let block which remain intact after the function end lisp is smart enough to keep 'S' in memory for as long as that reference exists
+** general let over lambda
+- our constructor function takes parameters to initialize item
+- use let block for local variables (like OO fields)
+- label block for local methods (so they can be easily called, can be recursive)
+- statements to process constructor parameters & initialize fields
+- lambda function that takes requests & data from caller & applies them to local data, probably using local methods
+** iterator
+* 2018-02-02 lisp macros
+** about macros
+- a lot of other languages will do pattern replacements before compilation (#define / #include in C)
+- similar to functions but ran before compilation or execution begins, used to transform written code into runnable code
+- used to give the illusion of simpler syntax for the programmer
+- used to replace a function call with something more efficient (e.g. in-place replacement)
+- to avoid repetitive evaluation of costly computations
+** in lisp
+- I want to be able to use (head L) or (tail L) instead
+- how about (defun head (x) (car L)) ?
+  - we suffer the cost of a function call (setf x (head L)) -> head -> car
+  - we have this extra layer of abstractions (and would take longer than just calling car)
+- (defmacro head (List) `(car ,List))
+  - use '`' to replace the text of the function verbatim (as opposed to the result of running 'car' and replacing head with its result), use ',' to specify that 'List' is a parameter to be replaced.
+- (macroexpand '(head L)) will return the result, which may be printed
+- (gensym) will return a unique new symbol
+- macro-lets exist: `(let ((,tmpA ,A) (,tmpB ,B)) ...)
+** creating AND macro
+*** considerations
+- note: AND is actually just a macro in lisp
+- (AND x y) expands to (if x y)
+- (AND) returns true
+- (AND x) returns x
+- (AND x y z) return (AND x (AND y z))
+*** implementation
+(defmacro AND (&rest args)
+ (cond
+  ((null args) T)  ;; T if no args
+  ((null (cdr args)) (car args))  ;; car if cdr is empty
+  (t `(if ,(car args) (AND ,@(cdr args))))))
+- note T is an expression which expands to the symbol T
+- use '@' to insert elements of list, rather than a list
+** creating OR macro
+*** considerations
+- (OR) expands to T
+- (OR x) expands to x
+- (OR y z) expands to (if y y z)
+- (OR x y z) expands to (if x x (if y y z))
+- I only want to evaluate x once, so use a gensym to keep track of its result
+*** implementation
+#+BEGIN_SRC lisp
+(defmacro OR (&rest args)
+  (cond
+   ((null args) T)
+   ((null (cdr args)) (car args))
+   (t (let ((v (gensym)))
+        `(let ((,v ,(car args)))
+           (if ,v ,v (OR ,@(cdr args))))))))
+
+#+END_SRC
+** NOT
+#+BEGIN_SRC lisp
+(defmacro NOT (x)
+  `(if ,x nil t))
+#+END_SRC
+*** XOR and XNOR
+- note: xor is true if an odd number of args are true
+  - xnor is true if an even number of args are true
+- so we want something like "(if x (XNOR y z) (XOR y z))"
+#+BEGIN_SRC lisp
+;; returns true if an odd number of args are true
+(defmacro XOR (&rest args)
+  (cond
+   ((null args) nil)
+   ((null (cdr args)) (car args))
+   (t
+    `(if ,(car args) (XNOR ,@(cdr args))
+       (XOR ,@(cdr args))))))
+;; returns true if an even number of args are true
+(defmacro XNOR (&rest args)
+  (cond
+   ((null args) t)
+   ((null (cdr args)) (not (car args)))
+   (t `(if ,(car args) (XOR ,@(cdr args)) (XNOR ,@(cdr args))))))
+;; returns the average of a list of argument
+(defmacro avg (&rest args)
+  `(/ (+ ,@args) ,(length args)))
+#+END_SRC
+* 2018-02-04 (m)
+* 2018-02-14
+** announcements
+- !!Midterm Friday Feb. 23rd
+- Lab 5 pushed
+** lisp code checking
+- last week we took a look at lisp error checkers
+- readTerm -> read file, break into lisp terms (strings, numbers, lists, etc.)
+  - (didn't handle mismatched brackets and quotes)
+- defun tr-complex (statement)
+  - if not null, (case (car statement)
+    - 'defun
+    - 'if
+      - >3 or <4? invalid
+      - call tr-Statement on (cadr Statement)
+      - (caddr Statement) on true case
+      - (cadddr Statement) on false case
+    - 'labmda
+    - 'list
+    - 'quote
+  - (list case), (block case)
+  - (block label [block])
+  - what about defuns?
+    - should only be done at global scope
+    - isn't be redefined
+    - function calls should be only to already defined functions
+    - valid number of parameters
+  - what about defvar?
+    - shouldn't redefine variable
+  - setf
+    - can be anywhere
+    - uses local variable if it can find one
+    - uses global variable otherwise
+    - implicitly does a defvar if no such global exists
+  - track
+    - list of defined functions
+      - name
+      - min # of parameters expected
+      - max # of parameters expected (nil for no limit)
+    - list of variables / parameters currently defined
+      - name of variable
+      - which scopes it is defined in (of the scopes active right now)
+    - (defvar x 3) <- x (global)
+    - (defun f (x) ...) <- push f onto x's list: (f global)
+    - when we leave the scope we push the function from the scope list <- (global)
+    - while going through the code we see the variable name
+    - hash table w/ variable name as key and list of scope as value
+  - in a function check if a used variable has been declared
+    - (if (gethash Varname VarTable) t nil)
+  - (defvar FunctionTable (make-hash-table))
+  - when I see defun:
+    - (defun Fname ParamList [statements])
+      - (if (gethash Fname FunctionTable) (format t "ERR: redeclaring function~%"))
+- maybe add the following to the functiontable instead of hardcoding it:
+| statement | min | max |
+|-----------+-----+-----|
+| if        |   3 | 4   |
+| cond      |   2 | nil |
+| block     |   2 | nil |
+| ...       |     |     |
+- still need to know what block I'm in: (defvar Scopes '('Global))
+- (defvar ActiveScope 0) ;; set 0 for the global scope
+- when I enter defvar, block, let, do, dolist, loop, labmda, ..., push an ID for the scope
+- use gensym to generate unique id
+- when entering scope push a unique onto activescopes list
+- when leaving scope pop scope ID
+- in more strongly typed language we need to:
+  - track type of variable as part of declaration
+  - when used in expression check type of var, type of operations
+- we still need to preprocess file to catch errors that (read) can't handle
+  - #! #[other symbols]
+  - mismatched " ", ( )
+  - what about ( "(" ) ? (brackets in text)
+    - really we should not be counting brackets in text
+    - need to know if I'm in code, comment, string
+    - | hello world | - should be interpreted as a valid variable name
+    - | j!? | - as well
+    - need to know if I'm in a pipe
+    - create a state machine as follows:
+#+BEGIN_EXAMPLE
+                  string
+                   ^ |"  
+ignore-line #! <- "| v        <-\n comment
+             \n->  code  <    ->;
+                   ^|  )\\(
+                  \|v    v
+                   pipe  push/pop line&col onto stack (err if popping nothing)
+#+END_EXAMPLE
+* 2018-02-16 (m) Grammars
+* 2018-02-21 Midterm review
+** Midterm notes
+- open books, open notes, 5 questions, anything from lectures or labs
+- definitely questions related to lisp
+  - high order functions
+  - lists, lisp, recursion, tail recursion
+  - macros
+  - let over lambda
+  - (syntax matters a bit)
+- defuns, car, cdr, cons, cond, if, let, block, dolist, do, hashes, &key, &optional, &rest, dynamic scope variables
+- map, eval, apply
+- type checking
+- parsing lisp in lisp, ideas for languages, parse trees, derivations
+- Midterm review:
+** Let over Lambda
+- lisp keeps track of lists as long as something continues to refer to then
+- have a constructor function with some local variables
+- it builds and returns a lambda function (e.g. a dispatcher)
+- the dispatcher can access, update the constructor's local variables
+- even after the constructor ends
+#+BEGIN_SRC lisp
+;; class creation
+(defun constructor ()
+   (let ((N 0))
+      ;; we can alter inside the lambda block
+      (lambda (command)
+         (cond
+            ((equalp commmand "increment")
+               (setf N (+ 1 N)))
+            ((equalp command "get") N)
+            (t (format t "Bad Command: ~A~%" command))))))
+;; create instance of class (object)
+(defvar x (constructor))
+;; and use the object;; 
+(funcall x "increment")
+;; runs the lambda function with parameter increment
+;; which changes that N in memory
+(defvar y (constructor))
+#+END_SRC
+- in lab4 some people were using 'setf' on a parameter on the inside of the lambda which was returned by the 'defun'ed function.
+  - this results in the same effect as let over lambda (parameter over lambda?) since the parameter list is a local variable but more global than the lambda itself.
+  - quickfix: use lambda over let to make an even more local variable, to initialize it every time
+** tail recursion
+- in a tail recursive function if every recursive call is immediately returned:
+#+BEGIN_SRC lisp
+(defun last (L)
+   ;; returns the last element in list L
+   (cond
+      ((not (listp L)) nil)
+      ((null L) nil)
+      ((null (cdr L)) (car L))
+      (t (last (cdr L)))))
+
+(defun factorial (N)
+;; returns the factorial of N
+   (cond
+      ((= 0 N) 1)
+      (t (* N (factorial (- N 1))))))
+#+END_SRC
+- a function is almost tail recursive if it only does a simple operation before a recursive call
+** &key
+#+BEGIN_SRC lisp
+(defun myfunction (&key (param 0) (param2 5))
+   (... rest of function ...))
+#+END_SRC
