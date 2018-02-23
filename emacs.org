@@ -224,9 +224,11 @@ Here are some commands I've found helpful:
 ** Lisp
 | command       | description                            |
 |---------------+----------------------------------------|
-| M-x lisp-mode | use lisp-mode                          |
+| M-x lisp-mode | enter lisp-mode                        |
 | M-:           | evaluate lisp expression in minibuffer |
 | C-x C-e       | evaluate lisp expression before cursor |
+- consider entering lisp interactive mode to debug lisp
+- C-u <Esc> C-x enters edebug more for lisp-interactive-mode
 ** Running emacs commands from the command line
 - running `emacs --batch -f command` will run an emacs command without necessarily opening emacs
 - (append --kill in case it is a command which does not quit on its own)
