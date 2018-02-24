@@ -1,13 +1,15 @@
-#+EXPORT_FILE_NAME: ../md/emacs
 #+TITLE: Emacs
 * EMACS
-- https://www.gnu.org/software/emacs/tour/ has a good overview of emacs capabilities
-- to start emacs just type 'emacs' in the command line
-  - use 'emacs (filename)' to immediately open a file called (filename)
-  - use 'emacs (filename) &' to open emacs with a file and send to background
+** About
+Emacs is a text editor, which is known for it's many modules and source-code editing tools. Check out the [[https://www.gnu.org/software/emacs/tour/][Emacs Tour]] for some tutorials on getting started.
+
+To start emacs just type 'emacs' in the command line, or type
+  - 'emacs (filename)' to immediately open a file called (filename)
+  - 'emacs (filename) &' to open emacs with a file and send to background
     - (background means not taking over the terminal window)
     - Note: do not use '&' via ssh
-- special keys and key modifiers:
+
+Special keys and key modifiers:
 | Symbol        | Meaning                     |
 |---------------+-----------------------------|
 | C-            | Control-                    |
@@ -18,7 +20,8 @@
 | (SPC)         | Spacebar                    |
 | (TAB)         | Tab key                     |
 | (cmd)         | A named command             |
-- note: many commands require multiple sequences of keys, which may require you to let go of control/alt to finish the sequence. For example:
+
+Note that many commands require multiple sequences of keys, which may require you to let go of control/alt to finish the sequence. For example:
     - 'C-x C-b' means "Control and x, then control and b"
     - 'C-x b' which  means "control and x, then just b"
 
@@ -34,11 +37,12 @@
 | M-w              | copy selection                       |
 | C-w              | cut selection (i.e. copy and delete) |
 | C-y              | paste                                |
+| M-y              | cycle through copy history           |
 | C-x b            | switch to buffer [3]                 |
 | C-x k            | kill a buffer                        |
 | C-x C-b          | list buffers                         |
-- [1] C-/ becomes 'redo again' and C-g C-/ becomes 'undo after redo'
-- [2] or just drag with the mouse             
+- [1] pushing C-g toggles redo and undo mode for C-/
+- [2] use the movement keys to widen selection or just drag with the mouse instead
 - [3] 'buffer' means 'opened file'
 - use 'M-x xterm-mouse-mode' to turn on the mouse via ssh
 - use 'M-x tetris' to start playing tetris 
@@ -86,18 +90,29 @@ you can quickly edit multiple files at once by splitting the current emacs sessi
 | C-x 2 | create horizontal frame  |
 | C-x 3 | create vertical frame    |
 | C-x o | switch to 'other' window |
-- note: use C-(up and C-(down) to cycle through the history of commands in that case
 
 ** Extras
 | C-x (TAB) | indent/dedent entire region                |
 | M-y       | cycle through previous yanks (after paste) |
 
-** Org mode
-- org mode is great for note taking, checklists and project management
-- use 'M-x org-mode' to enter org mode, or just open a file named (filename).org
-- use '\*' to indicate a header, and include '\*\*' to make a subheader
-- use '- [ ] item' to create a checklist item called 'item'
-- use '[/]' on the header to keep track of items used in sublist
+** Org Mode
+*** Org Mode Basics
+- [[http://sachachua.com/blog/2015/02/learn-take-notes-efficiently-org-mode/][More about org-mode]]
+Org mode is great for note taking, checklists and project management. Start a project in org mode by opening a file with a '.org' extension. Here are a few things you can do:
+
+: * top-heading
+: ** subheading
+: some text
+:
+: new paragraph
+: - list item
+:     - sub list-item
+: - [ ] checklist item
+: [[https://github.com/danthemango/][a website]]
+
+Here are a few commands used to manage org-mode headings and lists:
+| Command           | description                                         |
+|-------------------+-----------------------------------------------------|
 | (TAB)             | expand/contract elements in subheading              |
 | S-(TAB)           | expand/contract every heading                       |
 | C-c C-n / C-c C-p | jump to next / previous heading                     |
@@ -109,11 +124,30 @@ you can quickly edit multiple files at once by splitting the current emacs sessi
 | C-c ^             | sort list                                           |
 | C-c C-c           | mark item in list as sorted                         |
 | C-c C-e           | export notes (e.g. use 'h h' to export to html) [1] |
-1. go to 'M-x customize-option org-export-backends' to get a list of possible export options
+Go to 'M-x customize-option org-export-backends' to get a list of possible export options
+
 *** org-tables
-- for more info: http://orgmode.org/guide/Tables.html
-- emacs org mode has some amazing support for creating and maintaining tables in notes
-- to create a table, simply start subdividing sections of text between '|' characters
+[[http://orgmode.org/guide/Tables.html][Tables in org-mode]]
+
+Emacs org-mode has some amazing support for creating and maintaining tables in notes. To create a table, simply start subdividing sections of text between '|' characters. So, start by typing the following characters:
+#+BEGIN_EXAMPLE
+|-
+|heading 1 | heading 2
+|-
+| one | two 
+| three | four 
+#+END_EXAMPLE
+
+push tab, and you should see:
+#+BEGIN_EXAMPLE
+|-----------+-----------|
+| heading 1 | heading 2 |
+|-----------+-----------|
+| one       | two       |
+| three     | four      |
+#+END_EXAMPLE
+
+Shortcuts for working with org-tables:
 | command         | description                                   |
 |-----------------+-----------------------------------------------|
 | C-u 2 C-c       | create table, columns separated by two spaces |
@@ -123,13 +157,82 @@ you can quickly edit multiple files at once by splitting the current emacs sessi
 | M-S-(direction) | insert now row / column in table              |
 | S-(RET)         | increment previous value in below row         |
 
-*** org-mode templates
-- https://orgmode.org/manual/Easy-templates.html
-- use #+BEGIN_SRC C++ and #+END_SRC to get nicely-formatted code segments
-- use '<s tab' to quickly insert code-block segment
-*** org-mode exporting
-- http://orgmode.org/manual/Export-settings.html#Export-settings
-- org-mode formatted files can be exported in pdf, html, md, and other formats
+*** [[https://orgmode.org/manual/Easy-templates.html][org-mode templates]]
+**** [[https://orgmode.org/manual/Literal-examples.html][org-mode example-templates]]
+Type '<e' at the start of a line and push tab to open up a literal example. This will insert the text which indicates to org-mode that the text within that block is to be interpreted literally.
+Use ':' at the start of a line to do it only on one line. E.g.:
+: : this is a literal example
+
+**** org-mode code-template
+at the beginning of the line type: <s, push tab, and you should end up with:
+#+BEGIN_EXAMPLE
+#+BEGIN_SRC 
+
+#+END_SRC
+#+END_EXAMPLE
+which can be used in the following way to create code segments with syntax highlighting:
+#+BEGIN_EXAMPLE
+#+BEGIN_SRC C
+#include <stdio.h>
+int main(){
+   printf("hello world\n");
+}
+#+END_SRC
+#+END_EXAMPLE
+
+which looks like this:
+#+BEGIN_SRC C
+#include <stdio.h>
+int main(){
+   printf("hello world\n");
+}
+#+END_SRC
+
+#+RESULTS:
+: hello world
+
+***** running code
+With [[https://orgmode.org/worg/org-contrib/babel/intro.html][org-babel]], some languages can be interpreted in-place without leaving your org-mode file. To enable a language, use M-x 'customize', search for 'Org Babel Load Languages', add and enable any languages you want. [[http://ergoemacs.org/emacs/emacs_org_babel_literate_programing.html][More Info]].
+
+After enabling the C language for example, org mode prints the following after pushing C-c C-c on top of the source code above:
+#+BEGIN_EXAMPLE
+#+RESULTS:
+: hello world
+#+END_EXAMPLE
+
+*** org-mode code
+#+BEGIN_EXAMPLE
+#+BEGIN_SRC python
+return 1 + 3
+#+END_SRC
+
+#+RESULTS:
+: 4
+#+END_EXAMPLE
+#+BEGIN_SRC C
+#include <stdio.h>
+int main(){
+   printf("hello world\n");
+}
+#+END_SRC
+
+#+RESULTS:
+: hello world
+
+or use ':session' to run it as though you're in an interpreter
+#+BEGIN_EXAMPLE
+#+BEGIN_SRC python :session
+1 + 3
+#+END_SRC
+
+#+RESULTS:
+: 4
+#+END_EXAMPLE
+
+*** [[http://orgmode.org/manual/Export-settings.html#Export-settings][org-mode exporting]]
+
+org-mode formatted files can be exported in pdf, html, md, and other formats. [[https://orgmode.org/worg/org-tutorials/org-jekyll.html][How to build a Block with org-mode]].
+
 ** Bookmarks
 | C-x r m | mark bookmark          |
 | C-x r b | jump to named bookmark |
@@ -140,9 +243,10 @@ Basic usage of named commands:
 | Keys      | description             |
 |-----------+-------------------------|
 | M-x (cmd) | run named command       |
-| M-x (TAB) | list all named commands |
+| M-x (tab) | list all named commands |
 | C-h f     | help with named command |
 
+** M-x Commands
 Here are some commands I've found helpful:
 | M-x command             | description                                                   |
 |-------------------------+---------------------------------------------------------------|
@@ -191,8 +295,7 @@ Here are some commands I've found helpful:
 | ?         | quick help                   |
 | ^         | go up directory              |
 | +         | create new directory         |
-| h         | help with dired mode         |
-| q         | quit mode                    |
+| q         | quit                         |
 | shift+c   | copy file                    |
 | shift+a   | grep (search through) files  |
 | shift+r   | rename file                  |
@@ -214,9 +317,9 @@ Here are some commands I've found helpful:
   - looks great for most modes
   - set via M-x customize-themes
 - jekyll-modes
-  - (just playing with it) quickly edit jekyll
+  - Helps with editing jekyll blog projects.
 - octopress
-  - (just playing with it) quickly edit octopress files
+  - Helps with editing octopress website projects.
 - dired-details.el
   - dired-hide-details-mode
   - hides the details from directories in dired mode (toggle with '(')
@@ -229,13 +332,16 @@ Here are some commands I've found helpful:
 | C-x C-e       | evaluate lisp expression before cursor |
 - consider entering lisp interactive mode to debug lisp
 - C-u <Esc> C-x enters edebug more for lisp-interactive-mode
+*** slime mode
+I'm actually using [[https://common-lisp.net/project/slime/][SLIME mode]] for better lisp interpreting (emacs lisp was designed to be weaker than common lisp)
 ** Running emacs commands from the command line
-- running `emacs --batch -f command` will run an emacs command without necessarily opening emacs
-- (append --kill in case it is a command which does not quit on its own)
-  - e.g. I use the following command to compile an org-mode file to html: `emacs myfile.org --batch -f org-html-export-to-html`
-** Other
-- emacs tutorials can be found at https://www.youtube.com/playlist?list=PLxj9UAX4Em-IiOfvF2Qs742LxEK4owSkr
-- and at http://zoo.cs.yale.edu/classes/cs210/help/emacs.html
-- here are a few more commands I found useful
+Use 'emacs --batch -f command' from the command line if you want to run the equivalent of an M-x command without opening emacs.
 
+For example I sometimes use the following command to compile org-mode files to emacs:
+#+BEGIN_SRC bash
+emacs myfile.org --batch -f org-html-export-to-html
+#+END_SRC
+Also append '--kill' if the command is not designed to stop emacs on its own.
+** Other
+I watched [[https://www.youtube.com/playlist?list=PLxj9UAX4Em-IiOfvF2Qs742LxEK4owSkr][this video series]] to get started on emacs, and besides the man-pages and org-mode website I found [[http://zoo.cs.yale.edu/classes/cs210/help/emacs.html][this page]] pretty useful.
  
