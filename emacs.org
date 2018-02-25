@@ -26,21 +26,23 @@ Note that many commands require multiple sequences of keys, which may require yo
     - 'C-x b' which  means "control and x, then just b"
 
 ** Basics
-| C-g 	          | cancel command                       |
-| C-x C-f          | open file                            |
-| C-x C-s		    | save file                            |
-| C-x C-w		    | save as ..                           |
-| C-x C-c		    | close emacs                          |
-| C-/       		 | undo                                 |
-| C-g C-/          | redo [1]                             |
-| C-(SPC)          | start / end selection [2]            |
-| M-w              | copy selection                       |
-| C-w              | cut selection (i.e. copy and delete) |
-| C-y              | paste                                |
-| M-y              | cycle through copy history           |
-| C-x b            | switch to buffer [3]                 |
-| C-x k            | kill a buffer                        |
-| C-x C-b          | list buffers                         |
+| C-g 	          | cancel command                                     |
+| C-x C-f          | open file                                          |
+| C-x C-s		    | save file                                          |
+| C-x C-w		    | save as ..                                         |
+| C-x C-c		    | close emacs                                        |
+| C-/       		 | undo                                               |
+| C-g C-/          | redo [1]                                           |
+| C-(SPC)          | start / end selection [2]                          |
+| M-w              | copy selection                                     |
+| C-w              | cut selection (i.e. copy and delete)               |
+| C-y              | paste                                              |
+| M-y              | cycle through copy history                         |
+| C-x b            | switch to buffer [3]                               |
+| C-x k            | kill a buffer                                      |
+| C-x C-b          | list buffers                                       |
+| C-M-v            | scroll down current window (e.g. a help window) |
+| C-M-S-v          | scroll up unselected window                        |
 - [1] pushing C-g toggles redo and undo mode for C-/
 - [2] use the movement keys to widen selection or just drag with the mouse instead
 - [3] 'buffer' means 'opened file'
@@ -52,11 +54,15 @@ Note that many commands require multiple sequences of keys, which may require yo
 | C-p / C-n       | move to previous / next line (i.e. up/down)               |
 | C-b / C-f       | move back / forward one letter                            |
 | M-b / M-f       | move back / forward one word                              |
-| M-v / C-v       | move up / down one screenful                              |
+| M-v / C-v       | move up / down one screenful on current window            |
+| C-M-S-v / C-M-v | move up / down one screenful on other window              |
 | M-< / M->       | move to start / end of file                               |
 | C-s             | search (type in prompt) / go to next result               |
 | C-r             | backwards search (type in prompt) / go to previous result |
 | M-C-s           | search (regular exression)                                |
+| M-g M-g         | goto line #                                               |
+
+** Editing
 | (backspace)     | delete a letter-backwards                                 |
 | C-d             | delete a letter-forwards                                  |
 | C-(backspace)   | delete a word-backwards                                   |
@@ -67,29 +73,50 @@ Note that many commands require multiple sequences of keys, which may require yo
 | (F4)            | finish recording macro / play macro                       |
 | C-u [N] (cmd)   | repeat command (cmd) [N] times                            |
 | C-o             | insert line before                                        |
-| M-g M-g         | goto line #                                               |
-| C-M-v           | scroll down unselected window (e.g. a help window)        |
-| C-M-S-v         | scroll up unselected window                               |
 
 ** Help
-| C-h ?        | describe the quick help system            |
-| C-h i        | open 'info' (program manuals in linux)    |
-| C-h r        | open emacs manual                         |
-| C-h b        | list all keybindings                      |
-| C-h m        | describe current minor mode               |
-| C-h c        | describe a keybinding                     |
-| C-h k        | explain a keybinding                      |
-| C-h f        | explain function (the ones used with M-x) |
-| C-h v        | check the state of a variable             |
+| C-h ?        | describe the quick help system                 |
+| C-h i        | open info mode                                 |
+| C-h r        | open emacs manual                              |
+| C-h b        | list all keybindings                           |
+| C-h m        | describe current minor mode                    |
+| C-h c        | describe a keybinding                          |
+| C-h k        | explain a keybinding                           |
+| C-h f        | explain function (the ones used with M-x)      |
+| C-h v        | check the state of a variable                  |
 | (prefix) C-h | describe the uses of (prefix) (e.g. C-x 8 C-h) |
 
+*** Info mode
+Info mode is actually the just a wrapper around the 'info' program built into linux (accessible from the command line) since both applications developed as part of the GNU system. The info program has been integrated into every Linux system I've ever used, and I will often just open it from the command line when searching for something quickly. It is similar to the 'man' program, but while 'man' is designed to show you how to invoke (or start) a program, the 'info' program is designed to show how to use a program (E.g. check out the difference between the commands 'man emacs' and 'info emacs'). (Note: info just opens up the 'man-page' if one does not exist specifically for it)
+
+Commands to use from within info mode (C-h i)
+| Shortcut     | description                              |
+|--------------+------------------------------------------|
+| q            | quit                                     |
+| d            | view all info documents                  |
+| i            | search for topic                         |
+| (TAB)        | jump to link                             |
+| (RET)        | open link                                |
+| h            | info tutorial                            |
+| ?            | quick help                               |
+| C-v / M-v    | Scroll down / up on page                 |
+| (SPC) / (BS) | Scroll down / up across pages            |
+| n / p        | go to previous / next page on same level |
+| u            | go up a level                            |
+| [ / ]        | go to previous / next page across levels |
+| m            | open menu item link                      |
+| t            | go to top node in current document       |
+| g            | go to node name (e.g. 'top', '(emacs)')  |
+   
 ** Window commands
 you can quickly edit multiple files at once by splitting the current emacs session into multiple frames:
-| C-x 0 | close current frame      |
-| C-x 1 | close all other frames   |
-| C-x 2 | create horizontal frame  |
-| C-x 3 | create vertical frame    |
-| C-x o | switch to 'other' window |
+| C-x 0   | close current frame      |
+| C-x 1   | close all other frames   |
+| C-x 2   | create horizontal frame  |
+| C-x 3   | create vertical frame    |
+| C-x o   | switch to 'other' window |
+| C-x C-+ | Text scale increase      |
+| C-x C-- | Text scale decrease      |
 
 ** Extras
 | C-x (TAB) | indent/dedent entire region                |
@@ -111,19 +138,20 @@ Org mode is great for note taking, checklists and project management. Start a pr
 : [[https://github.com/danthemango/][a website]]
 
 Here are a few commands used to manage org-mode headings and lists:
-| Command           | description                                         |
-|-------------------+-----------------------------------------------------|
-| (TAB)             | expand/contract elements in subheading              |
-| S-(TAB)           | expand/contract every heading                       |
-| C-c C-n / C-c C-p | jump to next / previous heading                     |
-| C-c C-f / C-c C-b | jump to next / previous heading at same level       |
-| C-c C-u           | jump 'up' heading (higher level)                    |
-| S-(down) / S-(up) | jump to next / previous line item                   |
-| M-(Ret)           | insert new heading / item                           |
-| M-S-(RET)         | insert new checklist item                           |
-| C-c ^             | sort list                                           |
-| C-c C-c           | mark item in list as sorted                         |
-| C-c C-e           | export notes (e.g. use 'h h' to export to html) [1] |
+| Shortcut          | description                                             |
+|-------------------+---------------------------------------------------------|
+| (TAB)             | expand/contract elements in subheading                  |
+| S-(TAB)           | expand/contract every heading                           |
+| C-c C-n / C-c C-p | jump to next / previous heading                         |
+| C-c C-f / C-c C-b | jump to next / previous heading at same level           |
+| C-c C-u           | jump 'up' heading (higher level)                        |
+| S-(down) / S-(up) | jump to next / previous line item                       |
+| M-(Ret)           | insert new heading / item                               |
+| M-S-(RET)         | insert new checklist item                               |
+| C-c ^             | sort list                                               |
+| C-c C-c           | mark item in list as sorted                             |
+| C-c C-e           | export notes (e.g. use 'h h' to export to html) [1]     |
+| C-c C-j           | jump to another heading temporarily (return with C-c &) |
 Go to 'M-x customize-option org-export-backends' to get a list of possible export options
 
 *** org-tables
@@ -159,84 +187,47 @@ Shortcuts for working with org-tables:
 
 *** [[https://orgmode.org/manual/Easy-templates.html][org-mode templates]]
 **** [[https://orgmode.org/manual/Literal-examples.html][org-mode example-templates]]
-Type '<e' at the start of a line and push tab to open up a literal example. This will insert the text which indicates to org-mode that the text within that block is to be interpreted literally.
+Type '<e' at the start of a line and push tab to open up a literal example. This will insert:
+: #+BEGIN_EXAMPLE
+: #+END_EXAMPLE
+Which indicates the start and the end of a section which will not be formatted (i.e. like the <pre> tag in HTML).
+
 Use ':' at the start of a line to do it only on one line. E.g.:
 : : this is a literal example
 
 **** org-mode code-template
 at the beginning of the line type: <s, push tab, and you should end up with:
-#+BEGIN_EXAMPLE
-#+BEGIN_SRC 
+: #+BEGIN_SRC 
+: #+END_SRC
 
-#+END_SRC
-#+END_EXAMPLE
-which can be used in the following way to create code segments with syntax highlighting:
+Put some source code between those blocks, and they will be highlighted by the system (I specified the language "Python"):
 #+BEGIN_EXAMPLE
-#+BEGIN_SRC C
-#include <stdio.h>
-int main(){
-   printf("hello world\n");
-}
+#+BEGIN_SRC python :results output
+print("hello world");
 #+END_SRC
 #+END_EXAMPLE
 
-which looks like this:
-#+BEGIN_SRC C
-#include <stdio.h>
-int main(){
-   printf("hello world\n");
-}
+Here is what it looks like in org-mode:
+#+BEGIN_SRC python :results output
+print("hello world")
 #+END_SRC
-
-#+RESULTS:
-: hello world
 
 ***** running code
 With [[https://orgmode.org/worg/org-contrib/babel/intro.html][org-babel]], some languages can be interpreted in-place without leaving your org-mode file. To enable a language, use M-x 'customize', search for 'Org Babel Load Languages', add and enable any languages you want. [[http://ergoemacs.org/emacs/emacs_org_babel_literate_programing.html][More Info]].
 
-After enabling the C language for example, org mode prints the following after pushing C-c C-c on top of the source code above:
-#+BEGIN_EXAMPLE
-#+RESULTS:
-: hello world
-#+END_EXAMPLE
+After enabling the Python language for example, org mode prints the following after pushing C-c C-c on top of the source code above:
+: #+RESULTS:
+: : hello world
 
-*** org-mode code
-#+BEGIN_EXAMPLE
-#+BEGIN_SRC python
-return 1 + 3
-#+END_SRC
-
-#+RESULTS:
-: 4
-#+END_EXAMPLE
-#+BEGIN_SRC C
-#include <stdio.h>
-int main(){
-   printf("hello world\n");
-}
-#+END_SRC
-
-#+RESULTS:
-: hello world
-
-or use ':session' to run it as though you're in an interpreter
-#+BEGIN_EXAMPLE
-#+BEGIN_SRC python :session
-1 + 3
-#+END_SRC
-
-#+RESULTS:
-: 4
-#+END_EXAMPLE
-
+Note: add ':results value' or ':results output' for the return value or the printout (STDOUT) of a program. [[https://orgmode.org/manual/results.html][More Info]].
 *** [[http://orgmode.org/manual/Export-settings.html#Export-settings][org-mode exporting]]
-
-org-mode formatted files can be exported in pdf, html, md, and other formats. [[https://orgmode.org/worg/org-tutorials/org-jekyll.html][How to build a Block with org-mode]].
+Org-mode formatted files can be exported in pdf, html, md, and other formats. [[https://orgmode.org/worg/org-tutorials/org-jekyll.html][How to build a Block with org-mode]].
+- use 'C-c C-e h h' for example to export to html.
 
 ** Bookmarks
-| C-x r m | mark bookmark          |
-| C-x r b | jump to named bookmark |
-| C-x r l | list all bookmarks     |
+| C-x r m | create bookmark  |
+| C-x r b | jump to bookmark |
+| C-x r l | list bookmarks   |
 
 ** Named commands
 Basic usage of named commands:
@@ -307,33 +298,28 @@ Here are some commands I've found helpful:
 | u         | unmark                       |
 
 ** Packages I've installed
-- melpa
-  - provides extra packages
-- nyan-cat 
-  - novelty scroll-bar (M-x nyan-mode)
-- server-mode
-  - automatically start emacs server mode with a call to 'emacsclient'
-- base16-monokai
-  - looks great for most modes
+- melpa: provides extra packages
+- nyan-cat: novelty scroll-bar (M-x nyan-mode)
+- server-mode: automatically start emacs server mode with a call to 'emacsclient'
+- base16-monokai: good looking theme for emacs
   - set via M-x customize-themes
-- jekyll-modes
-  - Helps with editing jekyll blog projects.
-- octopress
-  - Helps with editing octopress website projects.
-- dired-details.el
-  - dired-hide-details-mode
-  - hides the details from directories in dired mode (toggle with '(')
+- jekyll-modes: plugin for jekyll blog editing system
+- octopress: plugin for the octopress static-site development system
+- dired-details.el: hides directories within 'dir-mode' in emacs
+  - start with 'M-x dired-hide-details-mode', or with '('
 
 ** Lisp
 | command       | description                            |
 |---------------+----------------------------------------|
 | M-x lisp-mode | enter lisp-mode                        |
+| M-x eshell    | open the emacs shell [1]               |
 | M-:           | evaluate lisp expression in minibuffer |
 | C-x C-e       | evaluate lisp expression before cursor |
+- [1] the eshell is a command-line terminal which uses emacs-lisp instead of bash
 - consider entering lisp interactive mode to debug lisp
 - C-u <Esc> C-x enters edebug more for lisp-interactive-mode
 *** slime mode
-I'm actually using [[https://common-lisp.net/project/slime/][SLIME mode]] for better lisp interpreting (emacs lisp was designed to be weaker than common lisp)
+I'm actually using [[https://common-lisp.net/project/slime/][SLIME mode]] for better lisp interpreting (emacs lisp is by design weaker than common lisp).
 ** Running emacs commands from the command line
 Use 'emacs --batch -f command' from the command line if you want to run the equivalent of an M-x command without opening emacs.
 
@@ -344,4 +330,3 @@ emacs myfile.org --batch -f org-html-export-to-html
 Also append '--kill' if the command is not designed to stop emacs on its own.
 ** Other
 I watched [[https://www.youtube.com/playlist?list=PLxj9UAX4Em-IiOfvF2Qs742LxEK4owSkr][this video series]] to get started on emacs, and besides the man-pages and org-mode website I found [[http://zoo.cs.yale.edu/classes/cs210/help/emacs.html][this page]] pretty useful.
- 
