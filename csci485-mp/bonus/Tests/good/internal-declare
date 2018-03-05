@@ -1,0 +1,6 @@
+declare x
+for x from 1 to 5 {
+   declare y
+   y = 5
+   print y
+}

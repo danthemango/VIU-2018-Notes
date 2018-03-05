@@ -1,0 +1,4 @@
+for x from x to x
+{
+   print x
+}

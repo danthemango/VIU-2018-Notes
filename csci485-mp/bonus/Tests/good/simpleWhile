@@ -1,0 +1,6 @@
+declare x
+declare y
+while ( x == y ) {
+   y = 4
+}
+

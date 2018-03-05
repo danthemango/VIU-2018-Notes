@@ -1,0 +1,20 @@
+start = 10
+end = 200
+index = start
+check = 150
+total = 0
+while ( index < end ) 
+{
+   total = total + index
+   if ( index == check ) {
+      total = total - check
+   }
+   if ( index == check ) {
+      total = 469
+   }
+   index = index + 5
+}
+hello = 555
+world = 777
+print " the final total is "
+print total

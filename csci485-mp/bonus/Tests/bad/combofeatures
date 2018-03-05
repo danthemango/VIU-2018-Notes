@@ -1,0 +1,13 @@
+print " Welcome! "
+mid = 3
+x = -4
+y = 10
+while ( x < y ) {
+   if ( x == mid ) {
+      print " mid point reached "
+   }
+   print " x is "
+   print x
+   x = x + 1
+}
+

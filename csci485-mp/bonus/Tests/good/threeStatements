@@ -1,0 +1,7 @@
+declare x
+declare y
+declare z
+x = 3
+y = 10 - x
+print z
+
