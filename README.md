@@ -1,2 +1,1 @@
-# School
-- used to store some minor-ish school projects and school notes
+used to store some notes, scripts, and minor-ish school projects during my Vancouver Island University CS program
